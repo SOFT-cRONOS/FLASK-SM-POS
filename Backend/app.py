@@ -22,11 +22,15 @@ CORS(app) # habilita las consultas externas ej navegador
 
 # app.config['SECRET_KEY'] = 'app_123'
 
-bd = mysql.connector.connect(host='172.17.0.2',
+# bd = mysql.connector.connect(host='172.17.0.2',
+#                             database='flaskpos',
+#                             user='admin',
+#                             password='flaskpass')
+
+bd = mysql.connector.connect(host='127.0.0.1',
                             database='flaskpos',
                             user='admin',
                             password='flaskpass')
-
 
 @app.route('/')
 def index():
@@ -39,12 +43,12 @@ def login():
     print(auth)
 
     """ Control: existen valores para la autenticacion? """
-    if not auth or not auth.username or not auth.password:
+    if not auth or not auth.usuario or not auth.password:
         return jsonify({"message": "No autorizado"}), 401       
             
     """ Control: existe y coincide el usuario en la BD? """
     cur = bd.cursor()
-    cur.execute('SELECT * FROM users WHERE username = %s AND password = %s', (auth.username, auth.password))
+    cur.execute('SELECT * FROM usuario WHERE nik = %s AND pass = %s', (auth.username, auth.password))
     row = cur.fetchone()
 
     if not row:
@@ -126,19 +130,7 @@ def test(id):
 
 
 
-# @app.route('/persons', methods = ['GET'])
-# def get_all_persons():
-#     cur = bd.cursor()
-#     cur.execute('SELECT * FROM person')
-#     data = cur.fetchall()
-#     print(cur.rowcount)
-#     print(data)
-#     personList = []
-#     for row in data:
-#         objPerson = Person(row)
-#         personList.append(objPerson.to_json())
-#     return jsonify( personList )
-
+#Consultar usuarios
 @app.route('/client', methods = ['GET'])
 def get_all_client():
     cur = bd.cursor()
@@ -151,37 +143,44 @@ def get_all_client():
         objClient = Client(row)
         clientes.append(objClient.to_json())
     return jsonify( clientes )
+
+#Consultar usuario por ID
 @app.route('/client/<int:id>', methods = ['GET'])
 def get_client_by_id(id):
     cur = bd.cursor()
-    cur.execute('SELECT * FROM person WHERE id = {0}'.format(id))
+    cur.execute('SELECT * FROM cliente WHERE id_cliente = {0}'.format(id))
     data = cur.fetchall()
     print(cur.rowcount)
     print(data)
     if cur.rowcount > 0:
-        objPerson = Person(data[0])
-        return jsonify( objPerson.to_json() )
+        objClient = Client(data[0])
+        return jsonify( objClient.to_json() )
     return jsonify( {"message": "id not found"} )
 
 
-""" @app.post('/persons') """
-@app.route('/persons', methods = ['POST'])
-def create_person():
-    name = request.get_json()["name"]
-    surname = request.get_json()["surname"]
+#nuevo usaurio verificando DNI existente
+@app.route('/client', methods = ['POST'])
+def new_client():
+    #lee el post
+    nombre = request.get_json()["nombre"]
+    apellido = request.get_json()["apellido"]
     dni = request.get_json()["dni"]
-    email = request.get_json()["email"]
 
+    #conecto a bd
     cur = bd.cursor()
     """ Control si existe el email indicado """
-    cur.execute('SELECT * FROM person WHERE email = %s', (email,))
+    cur.execute('SELECT * FROM cliente WHERE dni = %s', (dni,))
+    #apunto a la fila
     row = cur.fetchone()
-
+    #si hay una fila es porq ya existe
     if row:
+        #retorna y termina
         return jsonify({"message": "email ya registrado"})
 
-    """ acceso a BD -> INSERT INTO """    
-    cur.execute('INSERT INTO person (name, surname, dni, email) VALUES (%s, %s, %s, %s)', (name, surname, dni, email))
+    #acceso a BD -> INSERT INTO
+    cur.execute('''INSERT INTO cliente (nombre, apellido, dni) VALUES
+                 (%s, %s, %s)''', (nombre, apellido, dni))
+    #comint la bd
     bd.commit()
 
     """ obtener el id del registro creado """
@@ -189,56 +188,46 @@ def create_person():
     row = cur.fetchone()
     print(row[0])
     id = row[0]
-    return jsonify({"name": name, "surname": surname, "dni": dni, "email": email, "id": id})
+    return jsonify({"nombre": nombre, "apellido": apellido, "dni": dni, "id": id})
 
-@app.route('/persons/<int:id>', methods = ['GET'])
-def get_person_by_id(id):
-    cur = bd.cursor()
-    cur.execute('SELECT * FROM person WHERE id = {0}'.format(id))
-    data = cur.fetchall()
-    print(cur.rowcount)
-    print(data)
-    if cur.rowcount > 0:
-        objPerson = Person(data[0])
-        return jsonify( objPerson.to_json() )
-    return jsonify( {"message": "id not found"} )
 
-@app.route('/persons/<int:id>', methods = ['PUT'])
-def update_person(id):
-    name = request.get_json()["name"]
-    surname = request.get_json()["surname"]
+#actualizar datos de un usuario
+@app.route('/client/<int:id>', methods = ['PUT'])
+def update_client(id):
+    nombre = request.get_json()["nombre"]
+    apellido = request.get_json()["apellido"]
     dni = request.get_json()["dni"]
-    email = request.get_json()["email"]
     """ UPDATE SET ... WHERE ... """
     cur = bd.cursor()
-    cur.execute('UPDATE person SET name = %s, surname = %s, dni = %s, email = %s WHERE id = %s', (name, surname, dni, email, id))
-    mysql.connection.commit()
-    return jsonify({"id": id, "name": name, "surname": surname, "dni": dni, "email": email})
+    cur.execute('UPDATE person SET nombre = %s, apellido = %s, dni = %s WHERE id = %s', (nombre, apellido, dni, id))
+    bd.commit()
+    return jsonify({"id": id, "nombre": nombre, "apellido": apellido, "dni": dni})
 
-@app.route('/persons/<int:id>', methods = ['DELETE'])
-def remove_person(id):
+#eliminar usuario (no practico)
+@app.route('/client/<int:id>', methods = ['DELETE'])
+def remove_client(id):
     """ DELETE FROM WHERE... """
     cur = bd.cursor()
-    cur.execute('DELETE FROM person WHERE id = {0}'.format(id))
-    mysql.connection.commit()
+    cur.execute('DELETE FROM cliente WHERE id = {0}'.format(id))
+    bd.commit()
     return jsonify({"message": "deleted", "id": id})
 
 
-@app.route('/user/<int:id_user>/client/<int:id_client>', methods = ['GET'])
-@token_required
-@user_resources
-@client_resource
+# @app.route('/user/<int:id_user>/client/<int:id_client>', methods = ['GET'])
+# @token_required
+# @user_resources
+# @client_resource
 
-def get_client_by_id(id_user, id_client):
-    cur = bd.cursor()
-    cur.execute('SELECT * FROM client WHERE id = {0}'.format(id_client))
-    data = cur.fetchall()
-    print(cur.rowcount)
-    print(data)
-    if cur.rowcount > 0:
-        objClient = Client(data[0])
-        return jsonify( objClient.to_json() )
-    return jsonify( {"message": "id not found"} ), 404
+# def get_client_by_id(id_user, id_client):
+#     cur = bd.cursor()
+#     cur.execute('SELECT * FROM client WHERE id = {0}'.format(id_client))
+#     data = cur.fetchall()
+#     print(cur.rowcount)
+#     print(data)
+#     if cur.rowcount > 0:
+#         objClient = Client(data[0])
+#         return jsonify( objClient.to_json() )
+#     return jsonify( {"message": "id not found"} ), 404
 
 
 @app.route('/user/<int:id_user>/client', methods = ['GET'])

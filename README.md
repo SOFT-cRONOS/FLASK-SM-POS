@@ -6,7 +6,7 @@ python3 -m venv env
 
 * activar entorno virtual
 
-source env/bin/activate
+source env/bin/activate or source env/Script/activate
 
 * instalamos modulos python
 

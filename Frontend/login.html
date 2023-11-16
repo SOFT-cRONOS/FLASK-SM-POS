@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.84.0">
+    <title>Signin Template · Bootstrap v5.0</title>
+    
+
+    <!-- Bootstrap core CSS -->
+    <link href="lib/bootstrap-5.0.2-dist/css/bootstrap.min.css" rel="stylesheet">
+
+    
+    <!-- Custom styles for this template -->
+    <link href="css/signin.css" rel="stylesheet">
+  </head>
+  <body class="text-center">
+    
+<main class="form-signin">
+  <form>
+    <img class="mb-4" src="img/person-circle.svg" alt="" width="72" height="57">
+    <h1 class="h3 mb-3 fw-normal">Bienvenido</h1>
+
+    <div class="form-floating">
+      <input type="text" class="form-control" id="floatingInput" placeholder="">
+      <label for="floatingInput">Nick</label>
+    </div>
+    <div class="form-floating">
+      <input type="password" class="form-control" id="floatingPassword" placeholder="contraseña">
+      <label for="floatingPassword">Contraseña</label>
+    </div>
+
+    <div class="checkbox mb-3">
+      <label>
+        <input type="checkbox" value="remember-me"> Recordarme
+      </label>
+    </div>
+    <button class="w-100 btn btn-lg btn-primary" onclick="inciarSesion()" type="button">Entrar</button>
+    <p class="mt-5 mb-3 text-muted">&copy; REPAREG - 2023</p>
+  </form>
+  <span id="message"></span>
+</main>
+<script>
+  // Esta función se ejecuta cuando la ventana carga.
+  window.onload = function(){
+    // Elimina los elementos 'token', 'username', y 'id' del localStorage al cargar la página.
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    localStorage.removeItem('id');
+    console.log('Token almacenado:', localStorage.getItem('token'));
+  }
+
+  // Funcion boton entrar.
+  function inciarSesion() {
+    // Limpia el mensaje de la interfaz.
+    document.getElementById('message').innerHTML = '';
+
+    // Obtiene el nombre de usuario y la contraseña del formulario.
+    const username = document.getElementById('floatingInput').value;
+    const password = document.getElementById('floatingPassword').value;
+    // Configuración de las opciones para la solicitud de tipo POST.
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json',
+            'Authorization': 'Basic ' + btoa(username + ":" + password)
+        }  
+    }
+    // Realiza una solicitud POST para el inicio de sesión.
+    fetch('http://127.0.0.1:4500/login', requestOptions)
+    .then(
+        res => {return res.json()}
+    ).then(
+        resp => {
+            console.log(resp);
+            // Verifica si la respuesta contiene un token.
+            if(resp.token){
+                // Almacena el token, el nombre de usuario y el id en el localStorage.
+                console.log('Token a almacenar:', resp.token);
+                localStorage.setItem('token', resp.token);
+                localStorage.setItem('username', resp.username);
+                localStorage.setItem('id', resp.id);
+                
+                // Muestra un mensaje de bienvenida y redirige al usuario al panel de control.
+                // document.getElementById("message").innerHTML = 'Bienvenido ' + resp.username;
+                window.location = 'index.html';
+            }
+            else{
+                // Muestra un mensaje de error si no se obtiene un token.
+                document.getElementById("message").innerHTML = resp.message;
+            }
+        }
+    )
+  }
+</script>
+
+
+    
+  </body>
+</html>

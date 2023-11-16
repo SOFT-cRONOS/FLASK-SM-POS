@@ -1,0 +1,77 @@
+:root{
+  --color-primario: #3c3a78;
+  --sombra-color-primario:rgba(60, 58, 120, .25);
+  --sombra-color-fondo: rgba(119, 102, 157, .1);
+  --color-secundario: #948fc4;
+  --color-terciario: #77669d;
+  --color-texto-light:#948fc4;
+  --color-texto-dark:#414149;
+  --color-link-light:#cac9e3;
+  --color-link-dark:#3c3a78;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: var(--sombra-color-fondo);
+}
+
+.bd-placeholder-img {
+  font-size: 1.125rem;
+  text-anchor: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+@media (min-width: 768px) {
+  .bd-placeholder-img-lg {
+    font-size: 3.5rem;
+  }
+}
+
+.form-signin {
+  width: 100%;
+  max-width: 330px;
+  padding: 15px;
+  margin: auto;
+}
+
+.form-signin .checkbox {
+  font-weight: 400;
+}
+
+.form-signin .form-floating:focus-within {
+  z-index: 2;
+}
+
+.form-signin input[type="email"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+
+.btn-primary:hover {
+  color: var(--color-texto-dark);
+  background-color: var(--color-secundario);
+  border-color: var(--color-secundario);
+}
+.btn-primary {
+  color: var(--color-texto-light);
+  background-color: var(--color-primario);
+  border-color: var(--color-primario);
+}

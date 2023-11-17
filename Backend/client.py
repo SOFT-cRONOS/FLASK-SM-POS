@@ -42,10 +42,11 @@ def get_all_client(id):
     return jsonify( clientes )
 
 #Consultar cliente por ID
-@clientHandler.route('/byid/<int:id>', methods = ['GET'])
-def get_client_by_id(id):
+@clientHandler.route('/<int:id>/byid/<int:id_cliente>', methods = ['GET'])
+#el primer id es el usuario verifica el token, el segundo es el de la consulta
+def get_client_by_id(id,id_cliente):
     cur = bd.cursor()
-    cur.execute('SELECT * FROM cliente WHERE id_cliente = {0}'.format(id))
+    cur.execute('SELECT * FROM cliente WHERE id_cliente = {0}'.format(id_cliente))
     data = cur.fetchall()
     print(cur.rowcount)
     print(data)

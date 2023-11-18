@@ -103,7 +103,7 @@
           <div class="btn-group me-2">
             <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
             <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#clientForm">
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="newClient()" data-bs-target="#clientForm">
               Nuevo
             </button>
           </div>
@@ -133,21 +133,66 @@
   </div>
 </div>
 
-<!-- ################ ventana modal nuevo cliente ######################## -->
+<!-- ################ ventana modal nuevo/editar cliente ######################## -->
 <div class="modal fade" id="clientForm" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="clientFormLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="clientFormLabel">Modal title</h5>
+        <h5 class="modal-title" id="clientFormLabel">titulo</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Understood</button>
-      </div>
+      <!-- ##### contenido ventana modal ###### -->
+      <form id="formClient">
+        <div class="modal-body">
+            <!-- #### datos cuenta ####  -->
+            <div class="row">
+              <div class="col">
+                <!-- Nick input -->
+                <div class="form-outline">
+                  <input type="text" id="nick" class="form-control" />
+                  <label class="form-label" for="nick">Nick</label>
+                </div>
+              </div>
+              <div class="col">
+                <!-- Email input -->
+                <div class="form-outline">
+                  <input type="email" id="email" class="form-control" />
+                  <label class="form-label" for="email">Email</label>
+                </div>
+              </div>
+            </div>
+            
+            <hr />
+            <!-- #### Datos personales #### -->
+            <div class="row">
+              <div class="col">
+                <!-- Nombre input -->
+                <div class="form-outline">
+                  <input type="text" id="nombre" class="form-control" />
+                  <label class="form-label" for="nombre">Nombre</label>
+                </div>
+              </div>
+              <div class="col">
+                <!-- Apellido input -->
+                <div class="form-outline">
+                  <input type="text" id="apellido" class="form-control" />
+                  <label class="form-label" for="apellido">Apellido</label>
+                </div>
+              </div>
+              <div class="col">
+                <!-- DNI input -->
+                <div class="form-outline">
+                  <input type="text" id="dni" class="form-control" />
+                  <label class="form-label" for="dni">DNI</label>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" onclick="saveCLient()">Guardar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
@@ -179,23 +224,9 @@
         //carga tabla clientes
         getClient();
 
-
       }
      
-     function editClient(id_cliente){
-          // Muestra el modal usando JavaScript
-          //primero busca el modal de nuevo usuario clientForm
-          var myModal = new bootstrap.Modal(document.getElementById('clientForm'), {
-            backdrop: 'static', //que no se cierre al hacer click
-            keyboard: false //que no se cierra al tocar esc
-          });
-
-          // Llama al método 'show' para mostrar el modal
-          myModal.show();
-          
-          //llena el form del modal con los datos del servidor
-          get_client_by_id(id_cliente)
-     }
+     
     </script>
     
   </body>

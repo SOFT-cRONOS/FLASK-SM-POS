@@ -12,7 +12,7 @@ class Client():
         self._dni = row[3]
     def to_json(self):
         return {
-            "id" : self._id,
+            "id_cliente" : self._id,
             "nombre" : self._nombre,
             "apellido" : self._apellido,
             "dni" : self._dni
@@ -43,6 +43,7 @@ def get_all_client(id):
 
 #Consultar cliente por ID
 @clientHandler.route('/<int:id>/byid/<int:id_cliente>', methods = ['GET'])
+@token_required
 #el primer id es el usuario verifica el token, el segundo es el de la consulta
 def get_client_by_id(id,id_cliente):
     cur = bd.cursor()
@@ -55,10 +56,26 @@ def get_client_by_id(id,id_cliente):
         return jsonify( objClient.to_json() )
     return jsonify( {"message": "id not found"} )
 
+#Consultar cliente por DNI
+@clientHandler.route('/<int:id>/bydni/<int:dni>', methods = ['GET'])
+@token_required
+#el primer id es el usuario verifica el token, el segundo es el de la consulta
+def get_client_by_dni(id,dni):
+    cur = bd.cursor()
+    cur.execute('SELECT * FROM cliente WHERE dni = {0}'.format(dni))
+    data = cur.fetchall()
+    print(cur.rowcount)
+    print(data)
+    if cur.rowcount > 0:
+        objClient = Client(data[0])
+        return jsonify( objClient.to_json() )
+    return jsonify( {"message": "id not found"} )
+
 
 #nuevo cliente verificando DNI existente
-@clientHandler.route('/new', methods = ['POST'])
-def new_client():
+@clientHandler.route('/<int:id>/save', methods = ['POST'])
+@token_required
+def save_client(id):
     #lee el post
     nombre = request.get_json()["nombre"]
     apellido = request.get_json()["apellido"]
@@ -66,7 +83,7 @@ def new_client():
 
     #conecto a bd
     cur = bd.cursor()
-    """ Control si existe el email indicado """
+    """ Control si existe el dni indicado """
     cur.execute('SELECT * FROM cliente WHERE dni = %s', (dni,))
     #apunto a la fila
     row = cur.fetchone()
@@ -78,28 +95,29 @@ def new_client():
     #acceso a BD -> INSERT INTO
     cur.execute('''INSERT INTO cliente (nombre, apellido, dni) VALUES
                  (%s, %s, %s)''', (nombre, apellido, dni))
-    #comint la bd
+    #comit la bd
     bd.commit()
 
     """ obtener el id del registro creado """
-    cur.execute('SELECT LAST_INSERT_ID()')
+    cur.execute('SELECT MAX(id_cliente) AS ultimo_id FROM cliente;')
     row = cur.fetchone()
     print(row[0])
-    id = row[0]
-    return jsonify({"nombre": nombre, "apellido": apellido, "dni": dni, "id": id})
+    id_cliente = row[0]
+    return jsonify({"nombre": nombre, "apellido": apellido, "dni": dni, "id_cliente": id_cliente})
 
 
 #actualizar datos de un cliente
-@clientHandler.route('/update/<int:id>', methods = ['PUT'])
-def update_client(id):
+@clientHandler.route('/<int:id>/update/<int:id_cliente>', methods = ['PUT'])
+@token_required
+def update_client(id, id_cliente):
     nombre = request.get_json()["nombre"]
     apellido = request.get_json()["apellido"]
     dni = request.get_json()["dni"]
     """ UPDATE SET ... WHERE ... """
     cur = bd.cursor()
-    cur.execute('UPDATE person SET nombre = %s, apellido = %s, dni = %s WHERE id = %s', (nombre, apellido, dni, id))
+    cur.execute('UPDATE cliente SET nombre = %s, apellido = %s, dni = %s WHERE id_cliente = %s', (nombre, apellido, dni, id_cliente))
     bd.commit()
-    return jsonify({"id": id, "nombre": nombre, "apellido": apellido, "dni": dni})
+    return jsonify({"id_cliente": id_cliente, "nombre": nombre, "apellido": apellido, "dni": dni})
 
 #eliminar usuario (no practico)
 @clientHandler.route('/delete/<int:id>', methods = ['DELETE'])
@@ -108,5 +126,5 @@ def remove_client(id):
     cur = bd.cursor()
     cur.execute('DELETE FROM cliente WHERE id = {0}'.format(id))
     bd.commit()
-    return jsonify({"message": "deleted", "id": id})
+    return jsonify({"message": "deleted", "id_cliente": id})
 

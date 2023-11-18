@@ -17,7 +17,7 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app) # habilita las consultas externas ej navegador
-
+app.config['CORS_HEADERS'] = 'Content-Type'# habilita las consultas externas ej navegador
 appconfig = appCfg()
 app.config['SECRET_KEY'] = appconfig.getSecretKey()
 

@@ -13,6 +13,9 @@ from config import appCfg
 
 #formato y funciones de clientes
 from client import Client, clientHandler
+#formato y funciones de item
+from item import Item, itemHandler
+
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -48,9 +51,13 @@ def user_login():
                         'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=100)}, app.config['SECRET_KEY'])
 
     return jsonify({"token": token, "username": auth.username , "id": row[0]})
+
+
 # Registrar el Blueprint de clientes
 app.register_blueprint(clientHandler, url_prefix='/client')
 
+# Registrar el Blueprint de clientes
+app.register_blueprint(itemHandler, url_prefix='/item')
 
 
 

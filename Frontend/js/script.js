@@ -678,7 +678,32 @@ return fetch(`http://127.0.0.1:4500/sell/${id}/getall`, requestOptions)
 }); 
 }
 
+function getSells_byid(id_venta){
+    // config de token
+    const id = localStorage.getItem('id');
+    const token = localStorage.getItem('token')
 
+    const requestOptions = {
+    method : 'GET',
+    headers:{
+        'Content-Type': 'application/json',
+        'x-access-token': token,
+        'user-id': id
+        }
+    }
+    // fin config de token
+    
+
+
+return fetch(`http://127.0.0.1:4500/sell/${id}/getall`, requestOptions)
+.then(
+    resp => {return resp.json()
+    })
+.catch(error => {
+    console.error('Error al obtener datos del cliente:', error);
+    throw error; // devuelve error
+});  
+}
 
 function loadTablaSells() {
     //lectura elementos html
@@ -696,9 +721,8 @@ function loadTablaSells() {
             const fila = document.createElement('tr');
             fila.innerHTML = `
                 <td>${sell.id_venta}</td>
-                <td>${sell.fecha}</td>
-                <td>${sell.cant_productos}</td>
-                
+                <td>${formatoFecha(sell.fecha)}</td>
+                <td>${sell.cant_productos}</td>                
                 <td>${formatoMoneda(sell.total_venta)}</td>
                 <td>${sell.apellido_cliente } ${sell.nombre_cliente } </td>
                 <td>
@@ -707,9 +731,28 @@ function loadTablaSells() {
             `;
             tbody.appendChild(fila);
         });
-    })}
+    })
+}
 
+//Funcion ventana Nuevo item
+function viewSells(){
+    // Muestra el modal usando JavaScript
+    //primero busca el modal de nuevo usuario itemForm
+    var myModal = new bootstrap.Modal(document.getElementById('viewSellsForm'), {
+    backdrop: 'static', //que no se cierre al hacer click
+    keyboard: false //que no se cierra al tocar esc
+    });
 
+    // Llama al método 'show' para mostrar el modal
+    myModal.show();
+
+        //busca los campos por id
+        // Selecciona el formulario y los campos relevantes
+        const titulo = document.getElementById("sellFormLabel"); //titulo del modal
+
+        titulo.innerText = "Ultimas ventas"
+
+}
 //######################################################################
 //###################   Fin Funciones Sell     ##########################
 //######################################################################
@@ -724,5 +767,12 @@ function formatoMoneda(valor) {
         minimumFractionDigits: 2
     });
 }
+
+//formato fecha dd/mm/yyyy
+function formatoFecha(dateString) {
+    var options = { day: '2-digit', month: '2-digit', year: 'numeric'};
+    return new Date(dateString).toLocaleDateString('es-ES', options);
+  }
+
 
         

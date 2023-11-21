@@ -97,14 +97,14 @@
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Clientes - <span id="username"></span></h1>
+        <h1 class="h2">Punto de Venta - <span id="username"></span></h1>
         <!-- ### barra superior ### -->
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group me-2">
             <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
             <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="newClient()" data-bs-target="#clientForm">
-              Nuevo
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="viewSells()" data-bs-target="#viewSellsForm">
+              Ultimas ventas
             </button>
           </div>
           <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
@@ -114,17 +114,30 @@
         </div>
         <!-- ### fin barra superior ### -->
       </div>
-
+      <table class="table table-striped table-sm" id="tabla-selldetail">
+        <thead>
+          <tr>
+            <th scope="col">Nª</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Detalle</th>
+            <th scope="col">Cantidad</th>
+            <th scope="col">$Unitario</th>
+            <th scope="col">Subtotal</th>              
+          </tr>
+        </thead>
+        <tbody id="datos-tabla-selldetail">        
+        </tbody>
+      </table>
     </main>
   </div>
 </div>
 
 <!-- ################ ventana modal nuevo/editar cliente ######################## -->
-<div class="modal fade" id="clientForm" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="clientFormLabel" aria-hidden="true">
+<div class="modal fade" id="viewSellsForm" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="sellFormLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="clientFormLabel">titulo</h5>
+        <h5 class="modal-title" id="sellFormLabel">titulo</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <!-- ##### contenido ventana modal ###### -->
@@ -134,9 +147,10 @@
           <thead>
             <tr>
               <th scope="col">Nª</th>
-              <th scope="col">DNI</th>
-              <th scope="col">Apellido</th>
-              <th scope="col">Nombre</th>              
+              <th scope="col">Fecha</th>
+              <th scope="col">Cantidad</th>
+              <th scope="col">Total</th>
+              <th scope="col">Cliente</th>              
             </tr>
           </thead>
           <tbody id="datos-tabla-sell">        

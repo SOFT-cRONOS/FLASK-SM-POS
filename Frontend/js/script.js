@@ -332,7 +332,7 @@ window.servidorURL = 'http://127.0.0.1:4500';
         }
 
         //Funcion para obtener datos de un item por codigo
-        function get_client_code(code){
+        function get_item_code(code){
             // config de token
             const id = localStorage.getItem('id');
             const token = localStorage.getItem('token')
@@ -441,6 +441,7 @@ window.servidorURL = 'http://127.0.0.1:4500';
             // Selecciona el formulario y los campos relevantes
             const titulo = document.getElementById("itemFormLabel"); //titulo del modal
             const form = document.getElementById('formItem');
+            const code = document.getElementById('code');
             const nombre = document.getElementById('nombre');
             const detalle = document.getElementById('detalle');
             const cantidad = document.getElementById('cantidad');
@@ -449,7 +450,7 @@ window.servidorURL = 'http://127.0.0.1:4500';
 
 
             
-            if (titulo.innerText.trim() === 'Nuevo Cliente') {
+            if (titulo.innerText.trim() === 'Nuevo Item') {
                 const requestOptions = {
                     method : 'POST',
                     headers:{
@@ -479,7 +480,7 @@ window.servidorURL = 'http://127.0.0.1:4500';
                 })
             } else {
                 //primero obtengo el id del cliente
-                get_client_dni(dni.value)
+                get_item_code(code.value)
                 .then(resp => {
                     const requestOptions = {
                         method : 'PUT',
@@ -490,8 +491,10 @@ window.servidorURL = 'http://127.0.0.1:4500';
                             },
                         body: JSON.stringify({
                             nombre: nombreInput.value,
-                            apellido: apellidoInput.value,
-                            dni: dni.value,
+                            detalle: detalle.value,
+                            cantidad: cantidad.value,
+                            compra: compra.value,
+                            venta: venta.value
                         })}
                     console.log(token)
                     fetch(`http://127.0.0.1:4500/client/${id}/update/${resp.id_cliente}`, requestOptions)
@@ -548,6 +551,11 @@ window.servidorURL = 'http://127.0.0.1:4500';
 //######################################################################
 
 //         ----------------------------------------------------
+
+
+//######################################################################
+//###################   Funciones Api     ##########################
+//######################################################################
 
  // #modelo consulta por token
  function test() {
@@ -635,6 +643,78 @@ function logout(){
 //######################################################################
 //###################   Fin Funciones Api     ##########################
 //######################################################################
+
+//         ----------------------------------------------------
+
+//######################################################################
+//####################### Funciones Sell ############################
+//######################################################################
+
+
+function getSells(){
+    // config de token
+    const id = localStorage.getItem('id');
+    const token = localStorage.getItem('token')
+
+    const requestOptions = {
+    method : 'GET',
+    headers:{
+        'Content-Type': 'application/json',
+        'x-access-token': token,
+        'user-id': id
+        }
+    }
+    // fin config de token
+    
+
+
+return fetch(`http://127.0.0.1:4500/sell/${id}/getall`, requestOptions)
+.then(
+    resp => {return resp.json()
+    })
+.catch(error => {
+    console.error('Error al obtener datos del cliente:', error);
+    throw error; // devuelve error
+}); 
+}
+
+
+
+function loadTablaSells() {
+    //lectura elementos html
+    const tabla = document.getElementById('tabla-sell');
+    const tbody = document.getElementById('datos-tabla-sell');
+    getSells()
+    .then( resp => {console.log(resp)
+        //action
+        // Vaciar todas las filas del <tbody>
+        while (tbody.firstChild) {
+            tbody.removeChild(tbody.firstChild);
+        }
+
+        resp.forEach((sell) => {
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+                <td>${sell.id_venta}</td>
+                <td>${sell.fecha}</td>
+                <td>${sell.cant_productos}</td>
+                
+                <td>${formatoMoneda(sell.total_venta)}</td>
+                <td>${sell.apellido_cliente } ${sell.nombre_cliente } </td>
+                <td>
+                <a href="#" class="btn btn-primary" onclick="editClient(${sell.id_venta})">Ver</a>
+                </td>
+            `;
+            tbody.appendChild(fila);
+        });
+    })}
+
+
+//######################################################################
+//###################   Fin Funciones Sell     ##########################
+//######################################################################
+
+//         ----------------------------------------------------
 
 // Función para dar formato a moneda
 function formatoMoneda(valor) {

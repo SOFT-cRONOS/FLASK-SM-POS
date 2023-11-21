@@ -60,7 +60,7 @@ def get_item_by_id(id,id_item):
     return jsonify( {"message": "id not found"} )
 
 
-#Consultar cliente por DNI
+#Consultar cliente por code
 @itemHandler.route('/<int:id>/bycode/<int:code>', methods = ['GET'])
 @token_required
 def get_item_bycode(id,code):
@@ -80,36 +80,42 @@ def get_item_bycode(id,code):
 @token_required
 def save_item(id):
     #lee el post
+    # code = request.get_json()["code"]
     nombre = request.get_json()["nombre"]
-    apellido = request.get_json()["apellido"]
-    dni = request.get_json()["dni"]
+    detalle = request.get_json()["detalle"]
+    cantidad = request.get_json()["cantidad"]
+    compra = request.get_json()["compra"]
+    venta = request.get_json()["venta"]
+
 
     #conecto a bd
     cur = bd.cursor()
-    """ Control si existe el dni indicado """
-    cur.execute('SELECT * FROM cliente WHERE dni = %s', (dni,))
+    # """ Control si existe el barcode indicado """
+    # cur.execute('SELECT * FROM item WHERE barcode = %s', (code))
     #apunto a la fila
-    row = cur.fetchone()
+    # row = cur.fetchone()
     #si hay una fila es porq ya existe
-    if row:
-        #retorna y termina
-        return jsonify({"message": "email ya registrado"})
+    # if row:
+    #    #retorna y termina
+    #    return jsonify({"message": "email ya registrado"})
 
     #acceso a BD -> INSERT INTO
-    cur.execute('''INSERT INTO cliente (nombre, apellido, dni) VALUES
-                 (%s, %s, %s)''', (nombre, apellido, dni))
+    cur.execute('''INSERT INTO item (nombre_producto, detalle,
+                cantidad, precio_compra, precio_venta) VALUES
+                 (%s, %s, %s,%s, %s)''', (nombre, detalle, cantidad, compra, venta))
     #comit la bd
     bd.commit()
 
     """ obtener el id del registro creado """
-    cur.execute('SELECT MAX(id_cliente) AS ultimo_id FROM cliente;')
+    cur.execute('SELECT MAX(id_item) AS ultimo_id FROM item;')
     row = cur.fetchone()
     print(row[0])
-    id_cliente = row[0]
-    return jsonify({"nombre": nombre, "apellido": apellido, "dni": dni, "id_cliente": id_cliente})
+    id_item = row[0]
+    return jsonify({"nombre": nombre, "detalle": detalle, "cantidad": cantidad,
+                    "compra": compra, "venta": venta})
 
 
-#actualizar datos de un cliente
+#actualizar datos de un item
 @itemHandler.route('/<int:id>/update/<int:id_cliente>', methods = ['PUT'])
 @token_required
 def update_item(id, id_cliente):

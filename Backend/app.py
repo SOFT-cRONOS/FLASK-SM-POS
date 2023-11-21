@@ -15,6 +15,8 @@ from config import appCfg
 from client import Client, clientHandler
 #formato y funciones de item
 from item import Item, itemHandler
+#formato y funciones de Sell
+from sell import Sell, Sell_detail, sellHandler
 
 from flask_cors import CORS
 
@@ -58,6 +60,9 @@ app.register_blueprint(clientHandler, url_prefix='/client')
 
 # Registrar el Blueprint de clientes
 app.register_blueprint(itemHandler, url_prefix='/item')
+
+# Registrar el Blueprint de clientes
+app.register_blueprint(sellHandler, url_prefix='/sell')
 
 
 

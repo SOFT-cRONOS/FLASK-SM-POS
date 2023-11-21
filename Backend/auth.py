@@ -87,3 +87,27 @@ def user_resources(func):
         return func(*args, **kwargs)
     # Devuelve la función decorada
     return decorated
+
+#validacion recurso admin
+def admin_resources(func):
+    @wraps(func)
+    def decorated(*args, **kwargs):
+        print("Argumentos en admin_resources: ", kwargs)
+        id_cliente = kwargs['id_client']
+        cur = bd.cursor()
+        cur.execute('SELECT id_user FROM client WHERE id = {0}'.format(id_cliente)) 
+        data = cur.fetchone()
+        if data:
+            """ print(data) """
+            # Extrae el ID de usuario asociado al cliente
+            id_prop = data[0]
+            # Obtiene el ID de usuario desde las cabeceras de la solicitud
+            user_id = request.headers['user-id']
+            # Compara los IDs para asegurarse de que el usuario tiene acceso al recurso del usuario
+            if int(id_prop) != int(user_id):
+                # Si no tiene acceso, devuelve un mensaje de error y un código de estado 401 (No autorizado)
+                return jsonify({"message": "No tiene permisos para acceder a este recurso"}), 401
+        # Si todo está en orden, ejecuta la función original
+        return func(*args, **kwargs)
+    # Devuelve la función decorada
+    return decorated

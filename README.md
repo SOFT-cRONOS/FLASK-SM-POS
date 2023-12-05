@@ -10,7 +10,8 @@ source env/bin/activate or source env/Script/activate
 
 * instalamos modulos python
 
-pip install flask
+
+pip install requirements.txt
 
 * conector para bd
 pip install mysql-connector-python

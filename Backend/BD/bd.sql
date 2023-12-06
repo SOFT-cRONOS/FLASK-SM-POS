@@ -1,11 +1,13 @@
 -- ###########################################################################
 -- ######## TERMINOS PREVIOS:                                         ######## 
 -- ######## installment = Cuota mensual                               ########
+-- ######## supplier = proveedor                                      ########
 -- ########################################################################### 
 
 -- CREATE users 'admin'@'%' IDENTIFIED VIA mysql_native_password USING '***';
 -- GRANT USAGE ON *.* TO 'admin'@'%' REQUIRE NONE WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_users_CONNECTIONS 0; 
 --  GRANT ALL PRIVILEGES ON `flaskpos`.* TO 'admin'@'%' WITH GRANT OPTION; 
+
 drop database tester;
 CREATE DATABASE IF NOT EXISTS tester;
 
@@ -25,7 +27,7 @@ CREATE TABLE permissions (
 );
 
 -- Tabla para usuarios
-CREATE TABLE userss (
+CREATE TABLE users (
     id_users INT PRIMARY KEY AUTO_INCREMENT,
     nik VARCHAR(20) NOT NULL,
     cuil varchar(11) NOT NULL, -- Alterna con DNI
@@ -58,7 +60,7 @@ CREATE TABLE users_roles (
     id_users INT,
     id_role INT,
     PRIMARY KEY (id_users, id_role),
-    FOREIGN KEY (id_users) REFERENCES userss(id_users),
+    FOREIGN KEY (id_users) REFERENCES users(id_users),
     FOREIGN KEY (id_role) REFERENCES roles(id_role)
 );
 
@@ -67,7 +69,7 @@ CREATE TABLE login_history (
     users_id INT,
     login_time DATETIME NOT NULL,
     logout_time DATETIME,
-    FOREIGN KEY (users_id) REFERENCES userss(id_users)
+    FOREIGN KEY (users_id) REFERENCES users(id_users)
 );
 
 -- Insert de prueba para tablas usuarios y roles
@@ -86,7 +88,7 @@ INSERT INTO permissions (permission_name) VALUES
 ('Create');
 
 -- Insertar usuarios
-INSERT INTO userss (nik, cuil, name_users, lastname, password_hash, img, home_address, number_address, department, phone, email, id_role, status) VALUES
+INSERT INTO users (nik, cuil, name_users, lastname, password_hash, img, home_address, number_address, department, phone, email, id_role, status) VALUES
 ('usuario1','23235412541', 'Juan', 'Pérez', 'contrasena1hash', NULL, 'Calle Principal', 123, 'A', 123456789, 'juan@email.com', 1, 1),
 ('usuario2','54235412547', 'María', 'Gómez', 'contrasena2hash', NULL, 'Avenida Secundaria', 456, 'B', 987654321, 'maria@email.com', 2, 1),
 ('admin1','24547623762', 'Admin', 'Master', 'adminpasshash', NULL, 'Calle Admin', 789, 'C', 555555555, 'admin@email.com', 3, 1);
@@ -115,7 +117,7 @@ DELIMITER //
 CREATE PROCEDURE GetPermissionsForusers(IN usersId INT)
 BEGIN
     SELECT p.permission_name
-    FROM userss u
+    FROM users u
     JOIN users_roles ur ON u.id_users = ur.id_users
     JOIN role_permissions rp ON ur.id_role = rp.id_role
     JOIN permissions p ON rp.id_permission = p.id_permission
@@ -128,18 +130,93 @@ DELIMITER ;
 
 -- ##############################################################################################################
 -- ···························· SECCION PRODUCTOS E INVENTARIO ···················································
+CREATE TABLE supplier (
+    id_supplier int PRIMARY KEY AUTO_INCREMENT,
+    supplier_name varchar(40),
+    supplier_web varchar(255),
+    supplier_address varchar(255),
+    supplier_number_address int(3),
+    supplier_departament varchar(4),
+    supplier_phone varchar(11)
+);
+
+INSERT INTO supplier
+(supplier_name, supplier_web, supplier_address, supplier_number_address, supplier_departament, supplier_phone) VALUES
+('art-jet', 'art-jet.com', 'capi', '233', '', '01123123');
+
+
+CREATE TABLE brand (
+    id_brand int PRIMARY KEY AUTO_INCREMENT,
+    brand_name varchar(20),
+    brand_detail varchar(50)
+);
+
+INSERT INTO brand
+(brand_name, brand_detail) VALUES
+('art-jet', 'hojas fotograficas'),
+('aqx', 'hojas fotograficas economicas');
+
+CREATE TABLE um (
+    id_um int PRIMARY KEY AUTO_INCREMENT,
+    name_um varchar(20), -- gramos, kilo gramos
+    indicator_um varchar(3), -- g, kg
+    um_description varchar(50)
+);
+
+INSERT INTO um
+(name_um, indicator_um, um_description) VALUES
+('gramos', 'g', 'gramos de producto'),
+('unidad', 'u', 'cada producto, unidad');
+
+CREATE TABLE discount (
+    id_discount int PRIMARY KEY AUTO_INCREMENT,
+    discount int,
+    discount_N_condition int,
+    discount_date_condition varchar(100), -- json con dias
+    discount_description varchar(50)
+);
+
+INSERT INTO discount 
+(discount, discount_N_condition, discount_date_condition, discount_description) VALUES
+(5, 100, null, null),
+(3, null, "{'Martes', 'Domingo'}", 'descuento de dias martes y domingo');
+
+CREATE TABLE product_category (
+    id_product_category int PRIMARY KEY AUTO_INCREMENT,
+    product_category_name int NOT NULL,
+    product_category_detail varchar(50),
+    id_discount int,
+    FOREIGN KEY (id_discount) REFERENCES discount(id_discount)
+);
+
+INSERT INTO product_category
+(product_category_name, product_category_detail, id_discount) VALUES
+('hojas', 'hojas fotograficas',null),
+('vinilo', 'vinilo de corte', 2);
+
+
 CREATE TABLE product (
     id_product int PRIMARY KEY AUTO_INCREMENT,
-    product varchar(20)
+    id_product_category int default 1,
+    product_name varchar(20),
+    id_brand int,
+    stock int,
+    stock_alert int,
+    id_um int DEFAULT 1,
+    buy_price decimal(10,2) not null,
+    gain_margin int,
+    sell_price decimal(10,2),
+    id_supplier int, -- falta traducir
+    score TINYINT UNSIGNED NOT NULL DEFAULT 0 CHECK (nombre_columna >= 0 AND nombre_columna <= 5)
+    FOREIGN KEY (id_brand) REFERENCES brand(id_brand),
+    FOREIGN KEY (id_product_category) REFERENCES product_category(id_product_category),
+    FOREIGN KEY (id_um) REFERENCES um(id_um),
+    FOREIGN KEY (id_supplier) REFERENCES supplier(id_supplier)
 );
 
 INSERT INTO product
-(product) VALUES
-('Crema'),
-('Shampoo'),
-('jabon'),
-('peine'),
-('arroz'),
+(id_prduct_category, product_name,id_brand, stock, stock_alert, id_um, buy_price, gain_margin, sell_price, id_supplier) VALUES
+(1,'hoja fotografica', 1, 100, 5, 2, 100.00, 35, 135.00),
 ('Teclado');
 
 
@@ -163,7 +240,7 @@ CREATE TABLE sell_responsibles (
     id_sell INT,
     id_users INT,
     FOREIGN KEY (id_sell) REFERENCES sell(id_sell),
-    FOREIGN KEY (id_users) REFERENCES userss(id_users)
+    FOREIGN KEY (id_users) REFERENCES users(id_users)
 );
 
 CREATE TABLE sell_detail (
@@ -294,7 +371,7 @@ BEGIN
     JOIN
         sell_responsibles sr ON s.id_sell = sr.id_sell
     JOIN
-        userss u ON sr.id_users = u.id_users
+        users u ON sr.id_users = u.id_users
     JOIN users_roles ur on u.id_users = ur.id_users
     JOIN role_permissions rp ON ur.id_role = rp.id_role
     JOIN roles r ON rp.id_role = r.id_role

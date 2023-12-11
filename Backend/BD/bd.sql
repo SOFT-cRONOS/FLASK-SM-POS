@@ -14,7 +14,7 @@ CREATE DATABASE IF NOT EXISTS tester;
 USE tester;
 
 -- Tabla para roles
-CREATE TABLE roles (
+CREATE TABLE role (
     id_role INT PRIMARY KEY AUTO_INCREMENT,
     role_name VARCHAR(15) NOT NULL,
     description_role VARCHAR(50)
@@ -23,7 +23,8 @@ CREATE TABLE roles (
 -- Tabla para permisos
 CREATE TABLE permissions (
     id_permission INT PRIMARY KEY AUTO_INCREMENT,
-    permission_name VARCHAR(50) NOT NULL
+    permission_name VARCHAR(20) NOT NULL,
+    description_permissions varchar(50)
 );
 
 -- Tabla para usuarios
@@ -34,48 +35,48 @@ CREATE TABLE users (
     cuit varchar(11),
     name_users VARCHAR(20) NOT NULL,
     lastname VARCHAR(20) NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
+    pass VARCHAR(255) NOT NULL,
     img VARCHAR(255),
     home_address VARCHAR(30),
     number_address INT(4),
     department VARCHAR(4),
     phone INT,
     email VARCHAR(50) NOT NULL,
-    id_role INT,
-    status INT(1),
-    FOREIGN KEY (id_role) REFERENCES roles(id_role)
+    life_state INT(1),
+    log_state BOOLEAN,
+    id_city int
 );
 
--- Tabla para asignar permisos a roles
+-- Tabla para asignar permisos a role
 CREATE TABLE role_permissions (
     id_role INT,
     id_permission INT,
     PRIMARY KEY (id_role, id_permission),
-    FOREIGN KEY (id_role) REFERENCES roles(id_role),
+    FOREIGN KEY (id_role) REFERENCES role(id_role),
     FOREIGN KEY (id_permission) REFERENCES permissions(id_permission)
 );
 
 -- Tabla para asignar roles a usuarios
-CREATE TABLE users_roles (
+CREATE TABLE users_role (
     id_users INT,
     id_role INT,
     PRIMARY KEY (id_users, id_role),
     FOREIGN KEY (id_users) REFERENCES users(id_users),
-    FOREIGN KEY (id_role) REFERENCES roles(id_role)
+    FOREIGN KEY (id_role) REFERENCES role(id_role)
 );
 
 CREATE TABLE login_history (
     id_login INT PRIMARY KEY AUTO_INCREMENT,
-    users_id INT,
-    login_time DATETIME NOT NULL,
-    logout_time DATETIME,
-    FOREIGN KEY (users_id) REFERENCES users(id_users)
+    id_users INT,
+    login_date DATETIME NOT NULL,
+    logout_date DATETIME,
+    FOREIGN KEY (id_users) REFERENCES users(id_users)
 );
 
 -- Insert de prueba para tablas usuarios y roles
 
 -- Insertar roles
-INSERT INTO roles (role_name, description_role) VALUES 
+INSERT INTO role (role_name, description_role) VALUES 
 ('Usuario', 'Rol estándar para usuarios registrados'),
 ('Cliente', 'Rol para clientes con ciertos privilegios'),
 ('Admin', 'Rol de administrador con todos los privilegios');
@@ -88,12 +89,12 @@ INSERT INTO permissions (permission_name) VALUES
 ('Create');
 
 -- Insertar usuarios
-INSERT INTO users (nik, cuil, name_users, lastname, password_hash, img, home_address, number_address, department, phone, email, id_role, status) VALUES
-('usuario1','23235412541', 'Juan', 'Pérez', 'contrasena1hash', NULL, 'Calle Principal', 123, 'A', 123456789, 'juan@email.com', 1, 1),
-('usuario2','54235412547', 'María', 'Gómez', 'contrasena2hash', NULL, 'Avenida Secundaria', 456, 'B', 987654321, 'maria@email.com', 2, 1),
-('admin1','24547623762', 'Admin', 'Master', 'adminpasshash', NULL, 'Calle Admin', 789, 'C', 555555555, 'admin@email.com', 3, 1);
+INSERT INTO users (nik, cuil, name_users, lastname, pass, img, home_address, number_address, department, phone, email, life_state) VALUES
+('usuario1','23235412541', 'Juan', 'Pérez', 'contrasena1hash', NULL, 'Calle Principal', 123, 'A', 123456789, 'juan@email.com', 1),
+('usuario2','54235412547', 'María', 'Gómez', 'contrasena2hash', NULL, 'Avenida Secundaria', 456, 'B', 987654321, 'maria@email.com', 1),
+('admin1','24547623762', 'Admin', 'Master', 'adminpasshash', NULL, 'Calle Admin', 789, 'C', 555555555, 'admin@email.com', 0);
 
--- Insertar asignación de permisos a roles
+-- Insertar asignación de permisos a role
 INSERT INTO role_permissions (id_role, id_permission) VALUES
 (1, 1),
 (2, 2),
@@ -102,7 +103,7 @@ INSERT INTO role_permissions (id_role, id_permission) VALUES
 (3, 3);
 
 -- Insertar asignación de roles a usuarios
-INSERT INTO users_roles (id_users, id_role) VALUES
+INSERT INTO users_role (id_users, id_role) VALUES
 (1, 1),
 (2, 2),
 (3, 3);
@@ -118,7 +119,7 @@ CREATE PROCEDURE GetPermissionsForusers(IN usersId INT)
 BEGIN
     SELECT p.permission_name
     FROM users u
-    JOIN users_roles ur ON u.id_users = ur.id_users
+    JOIN users_role ur ON u.id_users = ur.id_users
     JOIN role_permissions rp ON ur.id_role = rp.id_role
     JOIN permissions p ON rp.id_permission = p.id_permission
     WHERE u.id_users = usersId;
@@ -137,7 +138,8 @@ CREATE TABLE supplier (
     supplier_address varchar(255),
     supplier_number_address int(3),
     supplier_departament varchar(4),
-    supplier_phone varchar(11)
+    supplier_phone varchar(11),
+    id_city int
 );
 
 INSERT INTO supplier
@@ -158,13 +160,13 @@ INSERT INTO brand
 
 CREATE TABLE um (
     id_um int PRIMARY KEY AUTO_INCREMENT,
-    name_um varchar(20), -- gramos, kilo gramos
-    indicator_um varchar(3), -- g, kg
-    um_description varchar(50)
+    property varchar(25), 
+    abbreviation varchar(3), -- g, kg
+    unit varchar(10)-- gramos, kilo gramos
 );
 
 INSERT INTO um
-(name_um, indicator_um, um_description) VALUES
+(unit, abbreviation, property) VALUES
 ('gramos', 'g', 'gramos de producto'),
 ('unidad', 'u', 'cada producto, unidad');
 
@@ -172,18 +174,18 @@ CREATE TABLE discount (
     id_discount int PRIMARY KEY AUTO_INCREMENT,
     discount int,
     discount_N_condition int,
-    discount_date_condition varchar(100), -- json con dias
+    discount_date_condition JSON, -- json con dias
     discount_description varchar(50)
 );
 
 INSERT INTO discount 
 (discount, discount_N_condition, discount_date_condition, discount_description) VALUES
 (5, 100, null, null),
-(3, null, "{'Martes', 'Domingo'}", 'descuento de dias martes y domingo');
+(3, null, '{"l": 0, "m": 1, "x":0, "j":0, "v": 0, "s":0, "d": 1}', 'descuento de dias martes y domingo');
 
 CREATE TABLE product_category (
     id_product_category int PRIMARY KEY AUTO_INCREMENT,
-    product_category_name int NOT NULL,
+    product_category_name varchar(20) NOT NULL,
     product_category_detail varchar(50),
     id_discount int,
     FOREIGN KEY (id_discount) REFERENCES discount(id_discount)
@@ -199,33 +201,38 @@ CREATE TABLE product (
     id_product int PRIMARY KEY AUTO_INCREMENT,
     id_product_category int default 1,
     product_name varchar(20),
+    detail varchar(50),
     id_brand int,
+    minimun_sell_units decimal(10,2),
     stock int,
     stock_alert int,
     id_um int DEFAULT 1,
     buy_price decimal(10,2) not null,
     gain_margin int,
     sell_price decimal(10,2),
-    id_supplier int, -- falta traducir
-    score TINYINT UNSIGNED NOT NULL DEFAULT 0 CHECK (nombre_columna >= 0 AND nombre_columna <= 5)
+    id_discount int,
+    id_supplier int, -- proveedor
+    score TINYINT UNSIGNED NOT NULL DEFAULT 0, -- CHECK (nombre_columna >= 0 AND nombre_columna <= 5),
+    product_status int,
+    link varchar(255),
     FOREIGN KEY (id_brand) REFERENCES brand(id_brand),
     FOREIGN KEY (id_product_category) REFERENCES product_category(id_product_category),
     FOREIGN KEY (id_um) REFERENCES um(id_um),
-    FOREIGN KEY (id_supplier) REFERENCES supplier(id_supplier)
+    FOREIGN KEY (id_supplier) REFERENCES supplier(id_supplier),
+    FOREIGN KEY (id_discount) REFERENCES discount(id_discount)
 );
 
 INSERT INTO product
-(id_prduct_category, product_name,id_brand, stock, stock_alert, id_um, buy_price, gain_margin, sell_price, id_supplier) VALUES
-(1,'hoja fotografica', 1, 100, 5, 2, 100.00, 35, 135.00),
-('Teclado');
+(id_product_category, product_name,id_brand, stock, stock_alert, id_um, buy_price, gain_margin, sell_price, id_supplier) VALUES
+(1,'hoja fotografica', 1, 100, 5, 2, 100.00, 35, 135.00, 1);
 
 
 -- ##############################################################################################################
 -- ···························· SECCION VENTAS, FACTURACION Y PAGOS ···················································
 CREATE TABLE sell (
     id_sell INT PRIMARY KEY AUTO_INCREMENT,
-    date_budget_init DATE,
-    date_budget_finish DATE, 
+    date_budget_init DATE, -- presupuesto iniciado
+    date_budget_finish DATE, -- presupuesto vencimiento
     budget_state INT DEFAULT 0, -- 0 pendiente, 1 aprobado.
     date_sell DATE,
     date_sell_finish DATE,
@@ -233,7 +240,8 @@ CREATE TABLE sell (
     sell_subtotal DECIMAL(10,2),
     sell_discount INT,
     sell_total DECIMAL(10,2),
-    paid_state INT
+    paid_state INT,
+    id_transaction int
 );
 
 CREATE TABLE sell_responsibles (
@@ -255,14 +263,15 @@ CREATE TABLE sell_detail (
 );
 
 CREATE TABLE paid_installment (
-    id_installment INT PRIMARY KEY AUTO_INCREMENT,
-    installment_number INT,
+    id_installment INT PRIMARY KEY AUTO_INCREMENT, -- cuota
+    installment_number INT, -- numero cuota.
     id_sell INT,
     amount_installment DECIMAL(10,2),
     date_paid DATE,
     date_due DATE,
-    installment_state BOOLEAN -- 0 deuda, 1 pagado
-);
+    installment_state BOOLEAN, -- 0 deuda, 1 pagado
+    FOREIGN KEY (id_sell) REFERENCES sell(id_sell)
+); 
 
 CREATE TABLE paid_category (
     id_paid_category INT PRIMARY KEY AUTO_INCREMENT,
@@ -298,7 +307,7 @@ INSERT INTO sell_responsibles (id_sell, id_users) VALUES
 -- Detalles de la venta
 INSERT INTO sell_detail (id_sell, id_product, quantity, discount, subtotal) VALUES
 (1, 1, 2.5, 5, 45.00),
-(1, 2, 1, 0, 30.00);
+(1, 1, 1, 0, 30.00);
 
 -- Insertar cotización pagada
 INSERT INTO paid_installment (installment_number, id_sell, amount_installment, date_paid, date_due, installment_state) VALUES
@@ -328,7 +337,7 @@ INSERT INTO sell_responsibles (id_sell, id_users) VALUES
 
 -- Detalles de la venta
 INSERT INTO sell_detail (id_sell, id_product, quantity, discount, subtotal) VALUES
-(2, 5, 1.00, 0, 5250.00);
+(2, 1, 1.00, 0, 5250.00);
 
 -- Insertar cotización pagada
 INSERT INTO paid_installment (installment_number, id_sell, amount_installment, date_paid, date_due, installment_state) VALUES
@@ -372,9 +381,9 @@ BEGIN
         sell_responsibles sr ON s.id_sell = sr.id_sell
     JOIN
         users u ON sr.id_users = u.id_users
-    JOIN users_roles ur on u.id_users = ur.id_users
+    JOIN users_role ur on u.id_users = ur.id_users
     JOIN role_permissions rp ON ur.id_role = rp.id_role
-    JOIN roles r ON rp.id_role = r.id_role
+    JOIN role r ON rp.id_role = r.id_role
     WHERE
         pq.installment_state = 0 AND r.role_name = "Cliente";
 END //

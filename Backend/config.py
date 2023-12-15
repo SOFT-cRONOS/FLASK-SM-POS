@@ -4,3 +4,7 @@ class appCfg:
     
     def getSecretKey(self):
         return self._SECRET_KEY
+    
+    def SecretKey():
+        config = appCfg()
+        return config.getSecretKey()

@@ -1,9 +1,9 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, session
 import jwt
 import datetime
 
 #configuracion de conect BD
-from database import ConnBD as bd
+from BD.database import ConnBD as bd
 
 #Funciones de autorizacion
 from auth import token_required, user_resources
@@ -11,20 +11,20 @@ from auth import token_required, user_resources
 #Valores de configuracion
 from config import appCfg
 
+#Formato y funciones de login
+from Routes.login import loginHandle
 #formato y funciones de clientes
-from client import Client, clientHandler
-#formato y funciones de item
-from item import Item, itemHandler
-#formato y funciones de Sell
-from sell import Sell, Sell_detail, sellHandler
+from Routes.user import userHandle
+#formato y funciones de clientes
+from Routes.product import productHandle
+
 
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app) # habilita las consultas externas ej navegador
 app.config['CORS_HEADERS'] = 'Content-Type'# habilita las consultas externas ej navegador
-appconfig = appCfg()
-app.config['SECRET_KEY'] = appconfig.getSecretKey()
+app.config['SECRET_KEY'] = appCfg.SecretKey()
 
 
 @app.route('/')
@@ -32,39 +32,12 @@ def index():
     return jsonify({"message": "API desarrollada con Flask"})
 
 
-@app.route('/login', methods = ['POST'])
-def user_login():
-    auth = request.authorization
-    print(auth)
-    """ Control: existen valores para la autenticacion? """
-    if not auth or not auth.username or not auth.password:
-        return jsonify({"message": "No autorizado"}), 401       
-            
-    """ Control: existe y coincide el usuario en la BD? """
-    cur = bd.cursor()
-    cur.execute('SELECT * FROM usuario WHERE nik = %s AND pass = %s', (auth.username, auth.password))
-    row = cur.fetchone()
-
-    if not row:
-       return jsonify({"message": "No autorizado"}), 401  
-    
-    """ El usuario existe en la BD y coincide su contraseña """
-    token = jwt.encode({'id': row[0],
-                        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=100)}, app.config['SECRET_KEY'])
-
-    return jsonify({"token": token, "username": auth.username , "id": row[0]})
-
-
 # Registrar el Blueprint de clientes
-app.register_blueprint(clientHandler, url_prefix='/client')
-
+app.register_blueprint(loginHandle, url_prefix='/login')
 # Registrar el Blueprint de clientes
-app.register_blueprint(itemHandler, url_prefix='/item')
-
-# Registrar el Blueprint de clientes
-app.register_blueprint(sellHandler, url_prefix='/sell')
-
-
+app.register_blueprint(userHandle, url_prefix='/user')
+# Registrar el Blueprint de Productos
+app.register_blueprint(productHandle, url_prefix='/product')
 
 
 #Consultar Clientes

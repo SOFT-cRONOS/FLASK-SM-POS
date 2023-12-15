@@ -8,11 +8,52 @@
 -- GRANT USAGE ON *.* TO 'admin'@'%' REQUIRE NONE WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_users_CONNECTIONS 0; 
 --  GRANT ALL PRIVILEGES ON `flaskpos`.* TO 'admin'@'%' WITH GRANT OPTION; 
 
+
+
+
 drop database tester;
 CREATE DATABASE IF NOT EXISTS tester;
 
 USE tester;
+-- ##############################################################################################################
+-- ····························           SECCION CIUDAD      ···················································
+CREATE TABLE location (
+    id_location int PRIMARY KEY AUTO_INCREMENT,
+    location_name varchar(20),
+    location_prefix int
+);
 
+CREATE TABLE estate (
+    id_estate int PRIMARY KEY AUTO_INCREMENT,
+    id_location int,
+    estate_name varchar(20),
+    estate_prefix int,
+    FOREIGN KEY (id_location) REFERENCES location(id_location)
+);
+
+CREATE TABLE city (
+    id_city int PRIMARY KEY AUTO_INCREMENT,
+    id_estate int,
+    city_name varchar(20),
+    city_prefix int,
+    postal_code int,
+    FOREIGN KEY (id_estate) REFERENCES estate(id_estate)
+);
+
+INSERT INTO location (location_name, location_prefix) VALUES(
+     'Argentina', 54
+);
+
+INSERT INTO  estate ( id_location, estate_name, estate_prefix ) VALUES(
+     1, 'Buenos Aires', null
+);
+
+INSERT INTO city ( id_estate, city_name, city_prefix, postal_code  ) VALUES(
+     1, 'Punta Alta', 2932, 8109
+);
+
+-- ##############################################################################################################
+-- ····························          SECCION USUARIOS     ···················································
 -- Tabla para roles
 CREATE TABLE role (
     id_role INT PRIMARY KEY AUTO_INCREMENT,
@@ -44,7 +85,8 @@ CREATE TABLE users (
     email VARCHAR(50) NOT NULL,
     life_state INT(1),
     log_state BOOLEAN,
-    id_city int
+    id_city int,
+    FOREIGN KEY (id_city) REFERENCES city(id_city)
 );
 
 -- Tabla para asignar permisos a role
@@ -108,25 +150,45 @@ INSERT INTO users_role (id_users, id_role) VALUES
 (2, 2),
 (3, 3);
 
-
 -- ##############################################################################################################
--- ·································· STORE PROCEDURES ··························································
--- ·························· Limitados a consultas complejas ···················································
-DELIMITER //
--- obtener permisos del usuario por id  example: (CALL GetPermissionsForusers(3);)
--- get iser's permissions for id: (CALL GetPermissionsForusers(3);)
-CREATE PROCEDURE GetPermissionsForusers(IN usersId INT)
-BEGIN
-    SELECT p.permission_name
-    FROM users u
-    JOIN users_role ur ON u.id_users = ur.id_users
-    JOIN role_permissions rp ON ur.id_role = rp.id_role
-    JOIN permissions p ON rp.id_permission = p.id_permission
-    WHERE u.id_users = usersId;
-END //
--- responde Read, Write, Create o Delete
--- response Read, Write, Create or Delete
-DELIMITER ;
+-- ····························          SECCION EMPRESA      ···················································
+CREATE TABLE company (
+    id_company int PRIMARY KEY AUTO_INCREMENT,
+    company_name varchar(20) not null,
+    company_slogan varchar(40),
+    company_img varchar(250),
+    company_address varchar(40),
+    company_number_address int,
+    company_floor varchar(4),
+    id_city int,
+    FOREIGN KEY (id_city) REFERENCES city(id_city)
+);
+
+CREATE TABLE company_user (
+    id_company_use int PRIMARY KEY AUTO_INCREMENT,
+    id_users int,
+    id_company int,
+    FOREIGN KEY (id_users) REFERENCES users(id_users),
+    FOREIGN KEY (id_company) REFERENCES company(id_company)
+);
+
+CREATE TABLE company_product (
+    id_company_product int PRIMARY KEY AUTO_INCREMENT,
+    id_product int,
+    id_company int,
+    FOREIGN KEY (id_product) REFERENCES product(id_product),
+    FOREIGN KEY (id_company) REFERENCES company(id_company)
+);
+
+INSERT INTO company ( company_name, company_slogan, id_city) VALUES(
+     'SM Diseño', 'Papeleria personalizada', 1
+);
+INSERT INTO  company_user ( id_users, id_company) VALUES(
+     1, 1
+);
+INSERT INTO  company_product ( id_product, id_company) VALUES(
+     1, 1
+);
 
 
 -- ##############################################################################################################
@@ -360,6 +422,101 @@ INSERT INTO paid_detail (id_installment, id_paid_category, date_paid, paid_mount
 -- ##############################################################################################################
 -- ·································· STORE PROCEDURES ··························································
 -- ·························· Limitados a consultas complejas ···················································
+
+DELIMITER //
+-- obtener permisos del usuario por id  example: (CALL GetPermissionsForusers(3);)
+-- get iser's permissions for id: (CALL GetPermissionsForusers(3);)
+CREATE PROCEDURE GetPermissionsForusers(IN usersId INT)
+BEGIN
+    SELECT p.permission_name
+    FROM users u
+    JOIN users_role ur ON u.id_users = ur.id_users
+    JOIN role_permissions rp ON ur.id_role = rp.id_role
+    JOIN permissions p ON rp.id_permission = p.id_permission
+    WHERE u.id_users = usersId;
+END //
+-- responde Read, Write, Create o Delete
+-- response Read, Write, Create or Delete
+DELIMITER ;
+DELIMITER //
+-- obtener usuarios de la empresa
+CREATE PROCEDURE getAllCompanyUsers(IN companyId INT)
+BEGIN
+    Select  users.id_users,
+            users.nik,
+            users.cuil,
+            users.cuit,
+            users.name_users,
+            users.lastname,
+            users.pass,
+            users.img,
+            users.home_address,
+            users.number_address,
+            users.department,
+            users.phone,
+            users.email
+    FROM users
+    INNER JOIN company_user ON 
+            users.id_users = company_user.id_users
+    WHERE company_user.id_company = companyId;
+END //
+-- responde Read, Write, Create o Delete
+-- response Read, Write, Create or Delete
+DELIMITER ;
+DELIMITER //
+-- obtener un usuarios de la empresa por ID
+CREATE PROCEDURE getCompanyUsersById(IN companyId INT, IN userId INT)
+BEGIN
+    Select  users.id_users,
+            users.nik,
+            users.cuil,
+            users.cuit,
+            users.name_users,
+            users.lastname,
+            users.pass,
+            users.img,
+            users.home_address,
+            users.number_address,
+            users.department,
+            users.phone,
+            users.email
+    FROM users
+    INNER JOIN company_user ON 
+            users.id_users = company_user.id_users
+    WHERE company_user.id_company = companyId
+    AND users.id_users = userId;
+END //
+-- responde 
+-- response 
+DELIMITER ;
+DELIMITER //
+-- obtener un usuarios de la empresa por cuit
+CREATE PROCEDURE getAllCompanyUsersByCUILCUIT(IN companyId INT, IN userCuil varchar(11), IN userCuit varchar(11))
+BEGIN
+    Select  users.id_users,
+            users.nik,
+            users.cuil,
+            users.cuit,
+            users.name_users,
+            users.lastname,
+            users.pass,
+            users.img,
+            users.home_address,
+            users.number_address,
+            users.department,
+            users.phone,
+            users.email
+    FROM users
+    INNER JOIN company_user ON 
+            users.id_users = company_user.id_users
+    WHERE company_user.id_company = companyId
+    AND (users.cuit = userCuil OR
+        users.cuil = userCuit)
+END //
+DELIMITER ;
+
+
+
 DELIMITER //
 CREATE PROCEDURE GetInstallmentDebt()
 BEGIN
@@ -390,7 +547,39 @@ END //
 -- responde los id de cuota e id de venta que el cliente no pago
 DELIMITER ;
 
-
-
+DELIMITER//
+-- consulta todos los productos por empresa
+CREATE PROCEDURE GetAllProductByCompany(IN companyID INT)
+BEGIN
+    SELECT
+        p.id_product,
+		pcat.product_category_name,
+		p.product_name,
+		p.detail,
+        b.brand_name,
+        p.minimun_sell_units,
+        p.stock,
+        p.stock_alert,
+        um.abbreviation,
+        p.buy_price,
+        p.gain_margin,
+        p.sell_price,
+        discount.discount,
+        supplier.supplier_name,
+		p.score,
+        p.product_status,
+        p.link,
+        c.company_name
+    FROM product p
+    JOIN product_category pcat ON p.id_product_category = pcat.id_product_category
+    JOIN brand b ON p.id_brand = b.id_brand
+    JOIN company_product cp ON p.id_product = cp.id_product
+    LEFT JOIN discount ON p.id_discount = discount.id_discount
+    JOIN supplier ON p.id_supplier = supplier.id_supplier
+    JOIN um ON p.id_um = um.id_um
+    JOIN company c ON cp.id_company = c.id_company
+    WHERE c.id_company = companyID;
+END //
+DELIMITER ;
 -- ##############################################################################################################
 

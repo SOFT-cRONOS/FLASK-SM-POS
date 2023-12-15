@@ -5,7 +5,7 @@ from functools import wraps
 #Valores de configuracion
 from config import appCfg
 #configuracion de conect BD
-from database import ConnBD as bd
+from BD.database import ConnBD as bd
 
 
 #validacion de token

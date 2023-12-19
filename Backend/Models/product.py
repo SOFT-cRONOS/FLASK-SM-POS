@@ -122,11 +122,97 @@ class Um():
         }
     
     def getUm():
-        pass
+        try:
+            cur = bd.cursor()
+            cur.execute('''
+                        SELECT
+                            *
+                        FROM UM
+                        '''
+                        )
+            resp = cur.fetchall()
+            List = []
+            for row in resp:
+                objList= Product(row)
+                List.append(objList.to_json())
+            return jsonify(List)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        finally:
+            cur.close
+
     def getUmbyID(id_um):
-        pass
-    def updateUm(id_um):
-        pass
+        try:
+            cur = bd.cursor()
+            cur.execute('''
+                        SELECT
+                            *
+                        FROM UM
+                        WHERE id_um = %s
+                        ''',
+                        (id_um,))
+            resp = cur.fetchall()
+            List = []
+            for row in resp:
+                objList= Product(row)
+                List.append(objList.to_json())
+            return jsonify(List)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        finally:
+            cur.close
+
+    def newUm(data):
+        unit = data["unit"]
+        abbreviation = data["abreviation"]
+        um_property = data["property"]
+
+        try:
+            cur = bd.cursor()
+            cur.execute('''
+                        INSERT INTO um
+                        (unit, abbreviation, property) VALUES
+                        (%s, %s, %s),
+                        ''',
+                        (unit, abbreviation, um_property,))
+            resp = cur.fetchall()
+            List = []
+            for row in resp:
+                objList= Product(row)
+                List.append(objList.to_json())
+            return jsonify(List)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        finally:
+            cur.close
+
+    def updateUm(data):
+        id_um = data["id_um"]
+        unit = data["unit"]
+        abbreviation = data["abreviation"]
+        um_property = data["property"]
+
+        try:
+            cur = bd.cursor()
+            cur.execute('''
+                        UPDATE um
+                        SET unit = %s, 
+                        abbreviation = %s, 
+                        property = %s)
+                        WHERE id_um = %s,
+                        ''',
+                        (unit, abbreviation, um_property, id_um,))
+            resp = cur.fetchall()
+            List = []
+            for row in resp:
+                objList= Product(row)
+                List.append(objList.to_json())
+            return jsonify(List)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        finally:
+            cur.close
+
     def deleteUm(id_um):
         pass
 
@@ -136,24 +222,89 @@ class ProductCategory():
        self._product_category_name = row[1]
        self._product_category_detail = row[2]
        self._id_discount = row[3]
+       self._discount = row[4]
     def to_json(self):
         return {
             "id_product_category": self._id_product_category,
             "product_category_name": self._product_category_name,
             "product_category_detail": self._product_category_detail,
-            "id_discount": self._id_discount
+            "id_discount": self._id_discount,
+            "discount": self._discount
         }
     
-    def getCompanyProductCategory(id_company):
-        pass
+    def getCompanyProductCategory():#id_company): Cada categoria deberia ser de cada empresa
+        try:
+            cur = bd.cursor()
+            cur.execute('''
+                        SELECT
+                            pc.id_product_category,
+                            pc.product_category_name,
+                            pc.product_category_detail,
+                            pc.id_discount,
+                            d.discount
+                        FROM product_category AS pc
+                        LEFT JOIN discount AS d
+                        ON pc.id_discount = d.id_discount                         
+                        '''
+                        ) #tendria q traer tambien las condiciones de descuento
+            resp = cur.fetchall()
+            List = []
+            for row in resp:
+                objList= Product(row)
+                List.append(objList.to_json())
+            return jsonify(List)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        finally:
+            cur.close
 
-    def getCompanyProductCategorybyID(id_companu, id_product_category):
-        pass
+    def getCompanyProductCategorybyID(id_product_category)#, id_company):
+        try:
+            cur = bd.cursor()
+            cur.execute('''
+                        SELECT
+                            pc.id_product_category,
+                            pc.product_category_name,
+                            pc.product_category_detail,
+                            pc.id_discount,
+                            d.discount
+                        FROM product_category AS pc
+                        INNER JOIN discount AS d
+                        ON pc.id_discount = d.id_discount
+                        WHERE pc.id_product_category = %s                       
+                        ''',
+                        (id_product_category,)) #tendria q traer tambien las condiciones de descuento
+            resp = cur.fetchall()
+            List = []
+            for row in resp:
+                objList= Product(row)
+                List.append(objList.to_json())
+            return jsonify(List)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        finally:
+            cur.close
     
     
     
 class Discount():
-    pass
+    def __init__(self, row):
+       self._id_discount = row[0]
+       self._discount = row[1]
+       self._discount_N_condition = row[2]
+       self._discount_date_condition = row[3]
+       self._discount_description = row[4]
+    def to_json(self):
+        return {
+            "id_discount": self._id_discount,
+            "discount": self._discount,
+            "discount_N_condition": self._discount_N_condition,
+            "discount_date_condition": self._discount_date_condition,
+            "discount_description": self._discount_description
+        }
+    
+    def getDiscount()
+
 
 class Brand():
     def __init__(self, row):

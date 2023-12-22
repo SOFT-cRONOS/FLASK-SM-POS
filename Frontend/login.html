@@ -20,14 +20,15 @@
   </head>
   <body class="text-center">
     
-<main class="form-signin">
+<main id="signin-cards" class="form-signin" >
   <div class="row" id="form">
     <div class="colapse-js" id="register-colapse" >
-      <div class="col card-login">
+      <div class="col card-register">
         <form>
           <div class="row">
             <div class="col">
               <input class="form-control" type="text" placeholder="Mail" aria-label="Mail" name="mail">
+
               <input class="form-control" type="text" placeholder="Nombre" aria-label="Nombre" name="name">
               <input class="form-control" type="text" placeholder="Contraseña" aria-label="Contraseña" name="pass">
               <input class="form-control" type="text" placeholder="Repetir Contraseña" aria-label="Repetir Contraseña" name="pass-confirm">
@@ -45,18 +46,16 @@
     <div class="col card-hello">
       <img class="mb-4" src="img/icon/user-white.png" alt="" width="100">
       <h1 class="h3 fw-normal">Hola!</h1>
-      <p>No tienes una cuenta?</p>
+      <p id="msgCount">No tienes una cuenta?</p>
       <button class="btn btn-primary" id="register">
-        Regisrarme
+        Registrarme
       </button>
     </div>
     <div class="colapse-js" id="login-colapse" >
       <div class="col card-login">
         <form>
           <input class="form-control" type="text" placeholder="Nick" aria-label="Nick" name="nick">
-          <br>
           <input class="form-control" type="text" placeholder="Contraseña" aria-label="Contraseña" name="pass">
-          <br>
           <button class="btn btn-primary" id="login" type="button">Login</button>
           
           <div class="checkbox mb-3">
@@ -81,19 +80,32 @@
         localStorage.removeItem('username');
         localStorage.removeItem('id');
 
+
         var loginColapse = document.getElementById('login-colapse');
-        loginColapse.style.maxWidth = '50%';
+        loginColapse.style.maxWidth = '50%'
+        loginColapse.classList.add('show-active');
+
         var registerColapse = document.getElementById('register-colapse');
         registerColapse.style.maxWidth = '0%';
 
-        var register = document.getElementById('register');
+        var msgCount = document.getElementById('msgCount');
+        
+        var btnRegLogChange = document.getElementById('register');
         register.addEventListener('click', function() {
             if (loginColapse.style.maxWidth === '0%') {
-                animateCollapse(loginColapse, 300, 50);
-                animateCollapse(registerColapse, 300, 0);
+                /* animateCollapse(loginColapse, 300, 50);
+                animateCollapse(registerColapse, 300, 0); */
+                loginColapse.style.maxWidth = '50%';
+                registerColapse.style.maxWidth = '0%';
+                btnRegLogChange.textContent = 'Registrarme';
+                msgCount.textContent = 'No tienes una cuenta?'
             } else {
-                animateCollapse(loginColapse, 300, 0);
-                animateCollapse(registerColapse, 300, 80);
+                /* animateCollapse(loginColapse, 300, 0);
+                animateCollapse(registerColapse, 300, 70); */
+                loginColapse.style.maxWidth = '0%';
+                registerColapse.style.maxWidth = '70%';
+                btnRegLogChange.textContent = 'Login';
+                msgCount.textContent = 'tienes cuenta?'
             }
         });
 

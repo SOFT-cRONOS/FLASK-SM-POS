@@ -232,7 +232,7 @@ class ProductCategory():
             "discount": self._discount
         }
     
-    def getCompanyProductCategory():#id_company): Cada categoria deberia ser de cada empresa
+    def getCompanyProductCategory(id_company):
         try:
             cur = bd.cursor()
             cur.execute('''
@@ -244,9 +244,10 @@ class ProductCategory():
                             d.discount
                         FROM product_category AS pc
                         LEFT JOIN discount AS d
-                        ON pc.id_discount = d.id_discount                         
+                        ON pc.id_discount = d.id_discount
+                        WHERE pc.id_company = %s;                        
                         '''
-                        ) #tendria q traer tambien las condiciones de descuento
+                        ,(id_company,)) #tendria q traer tambien las condiciones de descuento
             resp = cur.fetchall()
             List = []
             for row in resp:
@@ -258,7 +259,7 @@ class ProductCategory():
         finally:
             cur.close
 
-    def getCompanyProductCategorybyID(id_product_category)#, id_company):
+    def getCompanyProductCategorybyID(id_company, id_product_category):
         try:
             cur = bd.cursor()
             cur.execute('''
@@ -270,10 +271,12 @@ class ProductCategory():
                             d.discount
                         FROM product_category AS pc
                         INNER JOIN discount AS d
-                        ON pc.id_discount = d.id_discount
-                        WHERE pc.id_product_category = %s                       
+                            ON pc.id_discount = d.id_discount
+                        WHERE 
+                            pc.id_company = %s AND
+                            pc.id_product_category = %s                       
                         ''',
-                        (id_product_category,)) #tendria q traer tambien las condiciones de descuento
+                        (id_company, id_product_category,)) #tendria q traer tambien las condiciones de descuento
             resp = cur.fetchall()
             List = []
             for row in resp:
@@ -284,8 +287,6 @@ class ProductCategory():
             return jsonify({"error": str(e)}), 500
         finally:
             cur.close
-    
-    
     
 class Discount():
     def __init__(self, row):
@@ -303,8 +304,49 @@ class Discount():
             "discount_description": self._discount_description
         }
     
-    def getDiscount()
+    def getDiscount(id_company):
+        try:
+            cur = bd.cursor()
+            cur.execute('''
+                        SELECT
+                            *
+                        FROM discount
+                        WHERE id_company = %s
+                        '''
+                        ,(id_company,))
+            resp = cur.fetchall()
+            List = []
+            for row in resp:
+                objList= Product(row)
+                List.append(objList.to_json())
+            return jsonify(List)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        finally:
+            cur.close
 
+    def getDiscountbyId(id_company, id_discount):
+        try:
+            cur = bd.cursor()
+            cur.execute('''
+                        SELECT
+                            *
+                        FROM discount
+                        WHERE
+                            id_company = %s AND 
+                            id_discount = %s
+                        '''
+                        ,(id_company, id_discount,))
+            resp = cur.fetchall()
+            List = []
+            for row in resp:
+                objList= Product(row)
+                List.append(objList.to_json())
+            return jsonify(List)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        finally:
+            cur.close
 
 class Brand():
     def __init__(self, row):

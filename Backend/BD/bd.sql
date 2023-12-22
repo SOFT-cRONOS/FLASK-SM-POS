@@ -180,6 +180,22 @@ CREATE TABLE company_product (
     FOREIGN KEY (id_company) REFERENCES company(id_company)
 );
 
+CREATE TABLE company_brand (
+    id_company_brand int PRIMARY KEY AUTO_INCREMENT,
+    id_company int,
+    id_brand int,
+    FOREIGN KEY (id_company) REFERENCES company(id_company),
+    FOREIGN KEY (id_brand) REFERENCES brand(id_brand)
+);
+
+CREATE TABLE company_supplier (
+    id_company_supplier int PRIMARY KEY AUTO_INCREMENT,
+    id_company int,
+    id_supplier int,
+    FOREIGN KEY (id_company) REFERENCES company(id_company),
+    FOREIGN KEY (id_supplier) REFERENCES supplier(id_supplier)
+);
+
 INSERT INTO company ( company_name, company_slogan, id_city) VALUES(
      'SM Diseño', 'Papeleria personalizada', 1
 );
@@ -237,7 +253,9 @@ CREATE TABLE discount (
     discount int,
     discount_N_condition int,
     discount_date_condition JSON, -- json con dias
-    discount_description varchar(50)
+    discount_description varchar(50),
+    id_company int,
+    FOREIGN KEY (id_company) REFERENCES company(id_company)
 );
 
 INSERT INTO discount 
@@ -250,7 +268,9 @@ CREATE TABLE product_category (
     product_category_name varchar(20) NOT NULL,
     product_category_detail varchar(50),
     id_discount int,
-    FOREIGN KEY (id_discount) REFERENCES discount(id_discount)
+    id_company int,
+    FOREIGN KEY (id_discount) REFERENCES discount(id_discount),
+    FOREIGN KEY (id_company) REFERENCES company(id_company)
 );
 
 INSERT INTO product_category

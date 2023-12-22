@@ -12,48 +12,115 @@
     <!-- Bootstrap core CSS -->
     <link href="lib/bootstrap-5.0.2-dist/css/bootstrap.min.css" rel="stylesheet">
 
-    
+    <!-- Styles sheets -->
+    <link href="css/styles.css" rel="stylesheet">
     <!-- Custom styles for this template -->
     <link href="css/signin.css" rel="stylesheet">
+
   </head>
   <body class="text-center">
     
 <main class="form-signin">
-  <form>
-    <img class="mb-4" src="img/person-circle.svg" alt="" width="72" height="57">
-    <h1 class="h3 mb-3 fw-normal">Bienvenido</h1>
-
-    <div class="form-floating">
-      <input type="text" class="form-control" id="floatingInput" placeholder="">
-      <label for="floatingInput">Nick</label>
+  <div class="row" id="form">
+    <div class="colapse-js" id="register-colapse" >
+      <div class="col card-login">
+        <form>
+          <div class="row">
+            <div class="col">
+              <input class="form-control" type="text" placeholder="Mail" aria-label="Mail" name="mail">
+              <input class="form-control" type="text" placeholder="Nombre" aria-label="Nombre" name="name">
+              <input class="form-control" type="text" placeholder="Contraseña" aria-label="Contraseña" name="pass">
+              <input class="form-control" type="text" placeholder="Repetir Contraseña" aria-label="Repetir Contraseña" name="pass-confirm">
+            </div>
+            <div class="col">
+              <p>Te enviaremos un mail
+                para terminar con el 
+                registro de tu cuenta</p>
+              <button class="btn btn-primary" id="register-ok" type="button">Registrarme</button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
-    <div class="form-floating">
-      <input type="password" class="form-control" id="floatingPassword" placeholder="contraseña">
-      <label for="floatingPassword">Contraseña</label>
+    <div class="col card-hello">
+      <img class="mb-4" src="img/icon/user-white.png" alt="" width="100">
+      <h1 class="h3 fw-normal">Hola!</h1>
+      <p>No tienes una cuenta?</p>
+      <button class="btn btn-primary" id="register">
+        Regisrarme
+      </button>
     </div>
-
-    <div class="checkbox mb-3">
-      <label>
-        <input type="checkbox" value="remember-me"> Recordarme
-      </label>
+    <div class="colapse-js" id="login-colapse" >
+      <div class="col card-login">
+        <form>
+          <input class="form-control" type="text" placeholder="Nick" aria-label="Nick" name="nick">
+          <br>
+          <input class="form-control" type="text" placeholder="Contraseña" aria-label="Contraseña" name="pass">
+          <br>
+          <button class="btn btn-primary" id="login" type="button">Login</button>
+          
+          <div class="checkbox mb-3">
+            <label>
+              <br>
+              <input type="checkbox" value="remember-me"> Recordarme
+            </label>
+          </div>
+        </form>
+      </div>
     </div>
-    <button class="w-100 btn btn-lg btn-primary" onclick="inciarSesion()" type="button">Entrar</button>
-    <p class="mt-5 mb-3 text-muted">&copy; REPAREG - 2023</p>
-  </form>
+  </div>
+  <p class="mt-5 mb-3 text-muted">&copy; POSNET.AR - 2023</p>
   <span id="message"></span>
+  
 </main>
 <script src="js/script.js"></script>
+<script src="lib/bootstrap-5.0.2-dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // Esta función se ejecuta cuando la ventana carga.
-  window.onload = function(){
-    // Elimina los elementos 'token', 'username', y 'id' del localStorage al cargar la página.
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    localStorage.removeItem('id');
-    //console.log('Token almacenado:', localStorage.getItem('token'));
-  }
+    window.onload = function(){
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        localStorage.removeItem('id');
 
-  
+        var loginColapse = document.getElementById('login-colapse');
+        loginColapse.style.maxWidth = '50%';
+        var registerColapse = document.getElementById('register-colapse');
+        registerColapse.style.maxWidth = '0%';
+
+        var register = document.getElementById('register');
+        register.addEventListener('click', function() {
+            if (loginColapse.style.maxWidth === '0%') {
+                animateCollapse(loginColapse, 300, 50);
+                animateCollapse(registerColapse, 300, 0);
+            } else {
+                animateCollapse(loginColapse, 300, 0);
+                animateCollapse(registerColapse, 300, 80);
+            }
+        });
+
+        function animateCollapse(element, duration, targetWidth) {
+          var startWidth = parseFloat(element.style.maxWidth);
+          var startTime = null;
+
+          function easeInOutQuad(t) {
+              return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+          }
+
+          function step(timestamp) {
+              if (!startTime) startTime = timestamp;
+              var progress = timestamp - startTime;
+              var percentage = Math.min(progress / duration, 1);
+
+              // Aplica el ancho máximo con la función de tiempo ease-in-out
+              element.style.maxWidth = startWidth + (targetWidth - startWidth) * easeInOutQuad(percentage) + '%';
+
+              if (progress < duration) {
+                  requestAnimationFrame(step);
+              }
+          }
+
+          requestAnimationFrame(step);
+      }
+    }
 </script>
 
 

@@ -589,56 +589,6 @@ window.servidorURL = 'http://127.0.0.1:4500';
 
 
 
-//funcion logeo, pidiendo token. (boton entrar)
-// Funcion boton entrar.
-function inciarSesion() {
-    // Limpia el mensaje de la interfaz.
-    document.getElementById('message').innerHTML = '';
-
-    // Obtiene el nombre de usuario y la contraseña del formulario.
-    const username = document.getElementById('floatingInput').value;
-    const password = document.getElementById('floatingPassword').value;
-    // Configuración de las opciones para la solicitud de tipo POST.
-    const requestOptions = {
-        method: 'POST',
-        headers: {
-            'Content-Type' : 'application/json',
-            'Authorization': 'Basic ' + btoa(username + ":" + password)
-        }  
-    }
-    // Realiza una solicitud POST para el inicio de sesión.
-    fetch('http://127.0.0.1:4500/login', requestOptions)
-    .then(
-        res => {return res.json()}
-    ).then(
-        resp => {
-            console.log(resp);
-            // Verifica si la respuesta contiene un token.
-            if(resp.token){
-                // Almacena el token, el nombre de usuario y el id en el localStorage.
-                console.log('Token a almacenar:', resp.token);
-                localStorage.setItem('token', resp.token);
-                localStorage.setItem('username', resp.username);
-                localStorage.setItem('id', resp.id);
-                
-                // Muestra un mensaje de bienvenida y redirige al usuario al panel de control.
-                // document.getElementById("message").innerHTML = 'Bienvenido ' + resp.username;
-                window.location = 'index.html';
-            }
-            else{
-                // Muestra un mensaje de error si no se obtiene un token.
-                document.getElementById("message").innerHTML = resp.message;
-            }
-        }
-    )
-  }
-//funcion deslogeo 
-function logout(){
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    localStorage.removeItem('id');
-    window.location.href = "login.html";
-}
 
 //######################################################################
 //###################   Fin Funciones Api     ##########################

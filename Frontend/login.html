@@ -54,9 +54,10 @@
     <div class="colapse-js" id="login-colapse" >
       <div class="col card-login">
         <form>
-          <input class="form-control" type="text" placeholder="Nick" aria-label="Nick" name="nick">
-          <input class="form-control" type="text" placeholder="Contraseña" aria-label="Contraseña" name="pass">
-          <button class="btn btn-primary" id="login" type="button">Login</button>
+          <input id="nik" class="form-control" type="text" placeholder="Nick" aria-label="Nick" name="nick">
+          <input id="pass" class="form-control" type="text" placeholder="Contraseña" aria-label="Contraseña" name="pass">
+          <p id="msgError" style="color: red;"></p>
+          <button class="btn btn-primary" id="btnlogin" type="button">Login</button>
           
           <div class="checkbox mb-3">
             <label>
@@ -68,74 +69,17 @@
       </div>
     </div>
   </div>
+  <div id="register-card-m">
+    <p id="msgCount" class="mb-0 mt-1">No tienes cuenta?</p>
+    <a id="register-m" class="btn btn-secundary">Registrarme</a>
+  </div>
   <p class="mt-5 mb-3 text-muted">&copy; POSNET.AR - 2023</p>
   <span id="message"></span>
   
 </main>
-<script src="js/script.js"></script>
+<script src="js/server.js"></script>
+<script src="js/login.js"></script>
 <script src="lib/bootstrap-5.0.2-dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    window.onload = function(){
-        localStorage.removeItem('token');
-        localStorage.removeItem('username');
-        localStorage.removeItem('id');
-
-
-        var loginColapse = document.getElementById('login-colapse');
-        loginColapse.style.maxWidth = '50%'
-        loginColapse.classList.add('show-active');
-
-        var registerColapse = document.getElementById('register-colapse');
-        registerColapse.style.maxWidth = '0%';
-
-        var msgCount = document.getElementById('msgCount');
-        
-        var btnRegLogChange = document.getElementById('register');
-        register.addEventListener('click', function() {
-            if (loginColapse.style.maxWidth === '0%') {
-                /* animateCollapse(loginColapse, 300, 50);
-                animateCollapse(registerColapse, 300, 0); */
-                loginColapse.style.maxWidth = '50%';
-                registerColapse.style.maxWidth = '0%';
-                btnRegLogChange.textContent = 'Registrarme';
-                msgCount.textContent = 'No tienes una cuenta?'
-            } else {
-                /* animateCollapse(loginColapse, 300, 0);
-                animateCollapse(registerColapse, 300, 70); */
-                loginColapse.style.maxWidth = '0%';
-                registerColapse.style.maxWidth = '70%';
-                btnRegLogChange.textContent = 'Login';
-                msgCount.textContent = 'tienes cuenta?'
-            }
-        });
-
-        function animateCollapse(element, duration, targetWidth) {
-          var startWidth = parseFloat(element.style.maxWidth);
-          var startTime = null;
-
-          function easeInOutQuad(t) {
-              return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-          }
-
-          function step(timestamp) {
-              if (!startTime) startTime = timestamp;
-              var progress = timestamp - startTime;
-              var percentage = Math.min(progress / duration, 1);
-
-              // Aplica el ancho máximo con la función de tiempo ease-in-out
-              element.style.maxWidth = startWidth + (targetWidth - startWidth) * easeInOutQuad(percentage) + '%';
-
-              if (progress < duration) {
-                  requestAnimationFrame(step);
-              }
-          }
-
-          requestAnimationFrame(step);
-      }
-    }
-</script>
-
-
     
   </body>
 </html>

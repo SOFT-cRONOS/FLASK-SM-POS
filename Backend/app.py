@@ -22,9 +22,10 @@ from Routes.product import productHandle
 from flask_cors import CORS
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = appCfg.SecretKey()
 CORS(app) # habilita las consultas externas ej navegador
 app.config['CORS_HEADERS'] = 'Content-Type'# habilita las consultas externas ej navegador
-app.config['SECRET_KEY'] = appCfg.SecretKey()
+
 
 
 @app.route('/')

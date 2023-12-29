@@ -83,56 +83,67 @@ function animateCollapse(element, duration, targetWidth) {
 
 /*---- Funciones de logeo - login funcitions -----*/
 
-//funcion logeo, pidiendo token. (boton entrar)
-// Funcion boton Login.
-var btnLogin = document.getElementById('btnlogin');
+//funcion logeo, pidiendo token. (boton login)
+function credencialLogin () {
 
-function credencialLogin  () {
-    /* event.preventDefault(); */
-    console.log('caca')
-    localStorage.removeItem('authToken');
-  
     const username = document.getElementById('nik').value;
     const password = document.getElementById('pass').value;
     
-    let url = `${urlServidorAPI}/login`;
+    let url = `${urlServidorAPI}/login/`;
     let method = 'POST';
-    
     const data = { "username": username, "password": password };
-    console.log(data)
-    console.log("probando conexion");
-    const response = fetch(url, {
-      method,
-      body: JSON.stringify(data),
-      headers: { 'Content-Type': 'application/json' },
-    });
 
-    console.log(response.status);
-    if (response.status === 200) {
-      const result = response.json();
-  
-      const token = result.token;
-  
-      localStorage.setItem('token', token);
-  
-      window.location.href = 'index.html';
-    } else {
-      alert('Datos incorrectos');
+    console.log("probando conexion");
+
+    const requestOptions = {
+        method: method,
+        body: JSON.stringify(data),
+        headers: {
+            'Content-Type' : 'application/json',
+        }  
     }
+    // Realiza una solicitud POST para el inicio de sesión.
+    fetch(url, requestOptions)
+    .then(
+        resp => {return resp.json()}
+    ).then(
+        resp => {
+            console.log(resp);
+            try {
+                // Verifica si la respuesta contiene un token.
+                    if(resp.token){
+                        // Almacena el token, el nombre de usuario y el id en el localStorage.
+                        console.log('Token a almacenar:', resp.token);
+                        localStorage.setItem('token', resp.token);
+                        localStorage.setItem('username', resp.username);
+                        localStorage.setItem('id', resp.id);
+                        
+                        // Muestra un mensaje de bienvenida y redirige al usuario al panel de control.
+                        // document.getElementById("message").innerHTML = 'Bienvenido ' + resp.username;
+                        window.location = 'index.html';
+                    }
+                    else{
+                        // Muestra un mensaje de error si no se obtiene un token.
+                        msgError.innerHTML = resp.message;
+                    }
+                } catch (error) {
+            
+                console.error('error parsing json:', error);
+                }
+            }
+        
+    )
 
 }
 
-btnLogin.addEventListener('click', login); 
-
 function login() {
-    console.log("hola");
     // Limpia el mensaje de la interfaz.
     document.getElementById('message').innerHTML = '';
 
     // Obtiene el nombre de usuario y la contraseña del formulario.
     const username = document.getElementById('nik').value;
     const password = document.getElementById('pass').value;
-    var msgError = document.getElementById('msgError');
+    
 
     // Verificar si están en blanco
     if (username === '' && password === '') {
@@ -146,12 +157,9 @@ function login() {
         msgError.innerText = '';
         console.log('conecto to:', urlServidorAPI);
         credencialLogin();
+    }
 }
 
-
-
-
-}
 //funcion deslogeo 
 function logout(){
     localStorage.removeItem('token');
@@ -159,3 +167,13 @@ function logout(){
     localStorage.removeItem('id');
     window.location.href = "login.html";
 }
+
+/*---- Declaracion de botones -----*/
+/* mensaje errores */
+var msgError = document.getElementById('msgError');
+/* boton login */
+var btnLogin = document.getElementById('btnlogin');
+btnLogin.addEventListener('click', login); 
+
+
+

@@ -29,11 +29,12 @@ def regLogin(id_user):
 
 @loginHandle.route('/', methods = ['POST'])
 def user_login():
+    print("o")
     data = request.get_json()
-
+    
     nik = data['username']
     password = data['password']
-    
+    print(nik, password)
     """ Control: existen valores para la autenticacion? """
     if not nik or not password:
         return jsonify({"message": "No autorizado"}), 401       
@@ -57,6 +58,7 @@ def user_login():
                     , (nik,password,))
         row = cur.fetchone()
     except Exception as e:
+        print(e)
         return jsonify({"message": e}), 500
     finally:
         cur.close
@@ -83,5 +85,5 @@ def user_login():
     #Guardo en el historial de login
     regLogin(id_user)
     #cambiio el estado del usuario a conectado
-
+    print(jsonify({"token": token, "username": nik , "id": id_user}))
     return jsonify({"token": token, "username": nik , "id": id_user})

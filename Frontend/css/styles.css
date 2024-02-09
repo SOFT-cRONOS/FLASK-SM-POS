@@ -32,6 +32,7 @@ main {
  */
 
 .sidebar {
+  display: none;
   position: fixed;
   top: 0;
   /* rtl:raw:
@@ -54,6 +55,15 @@ main {
 
 .sidebar .spacer {
   flex: 1; /* Ajusta la altura según sea necesario */
+}
+
+@media (min-width: 768px) {
+  .sidebar {
+    align-items: center;
+    display: flex;
+    min-width: 90px;
+    max-width: 100px;
+  }
 }
 
 @media (max-width: 767.98px) {
@@ -85,6 +95,7 @@ main {
   font-weight: 500;
   color: var(--color-primario);
   text-align: center;
+  transition: all 0.3s ease-out;
 }
 
 .sidebar .nav-link .feather {
@@ -168,4 +179,9 @@ main {
   background-color: var(--color-text-light);
   border-radius: 25px;
   padding: 1.5rem;
+}
+
+.nav .nav-link:hover {
+  color:var(--color-secundario);
+  transform:scale(1.2)
 }

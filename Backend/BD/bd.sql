@@ -132,7 +132,7 @@ INSERT INTO permissions (permission_name) VALUES
 
 -- Insertar usuarios
 INSERT INTO users (nik, cuil, name_users, lastname, pass, img, home_address, number_address, department, phone, email, life_state) VALUES
-('usuario1','23235412541', 'Juan', 'Pérez', 'contrasena1hash', NULL, 'Calle Principal', 123, 'A', 123456789, 'juan@email.com', 1),
+('juanp','23235412541', 'Juan', 'Pérez', '123', NULL, 'Calle Principal', 123, 'A', 123456789, 'juan@email.com', 1),
 ('usuario2','54235412547', 'María', 'Gómez', 'contrasena2hash', NULL, 'Avenida Secundaria', 456, 'B', 987654321, 'maria@email.com', 1),
 ('admin1','24547623762', 'Admin', 'Master', 'adminpasshash', NULL, 'Calle Admin', 789, 'C', 555555555, 'admin@email.com', 0);
 

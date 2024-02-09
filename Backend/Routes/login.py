@@ -80,10 +80,11 @@ def user_login():
     
     #Guardo datos de usuario en el session:
     session['id_user'] = id_user
-    session['company'] = id_company
+    session['company'] = int(id_company)
+    print('company:',id_company)
 
     #Guardo en el historial de login
     regLogin(id_user)
     #cambiio el estado del usuario a conectado
     print(jsonify({"token": token, "username": nik , "id": id_user}))
-    return jsonify({"token": token, "username": nik , "id": id_user})
+    return jsonify({"token": token, "username": nik , "id": id_user, "company": id_company})

@@ -24,7 +24,11 @@
 
 // - * User login data */
 
-
+function logout(){
+    localStorage.removeItem('username');
+    localStorage.removeItem('token');
+    window.location.href = "login.html"
+}
 
 
 
@@ -36,12 +40,13 @@
         // config de token
         const id = localStorage.getItem('id');
         const token = localStorage.getItem('token')
-
+        const company = localStorage.getItem('company')
+        console.log(token);
         const requestOptions = {
         method : 'GET',
         headers:{
             'Content-Type': 'application/json',
-            'token': token,
+            'x-access-token': token,
             'user-id': id
             }
         }
@@ -52,7 +57,7 @@
         const tabla = document.getElementById('tabla-clientes');
         const tbody = document.getElementById('datos-tabla-clientes');
 
-    fetch(`${urlServidorAPI}/user/`, requestOptions).then(
+    fetch(`${urlServidorAPI}/user/${company}`, requestOptions).then(
         resp => {return resp.json()}
     ).then(
         resp => {console.log(resp)
@@ -65,10 +70,10 @@
             resp.forEach((cliente) => {
                 const fila = document.createElement('tr');
                 fila.innerHTML = `
-                    <td>${cliente.id_cliente}</td>
-                    <td>${cliente.dni}</td>
-                    <td>${cliente.apellido}</td>
-                    <td>${cliente.nombre}</td>
+                    <td>${cliente.id}</td>
+                    <td>${cliente.lastname}</td>
+                    <td>${cliente.name_users}</td>
+                    <td>${cliente.phone}</td>
                     <td>
                     <a href="#" class="btn btn-primary" onclick="editClient(${cliente.id_cliente})">Editar</a>
                     <a href="#" class="btn btn-secondary" onclick="bajaClint(${cliente.id_cliente})">Baja</a>
@@ -81,7 +86,6 @@
 
     )
     }
-
 
     //Funcion para obtener datos de un cliente por id
     function get_client_byid(id_cliente){

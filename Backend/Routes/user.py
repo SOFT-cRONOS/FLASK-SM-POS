@@ -6,7 +6,7 @@ from auth import token_required
 from Models.user import *
 from BD.database import ConnBD as bd
 
-
+from flask_cors import CORS, cross_origin
 userHandle = Blueprint('user', __name__)
 #test acceso a clientes
 
@@ -47,12 +47,12 @@ def usersPermissions(id_user):
         pass
 
 #ver todos los clientes
-@userHandle.route('/', methods = ['GET', 'POST'])
+@userHandle.route('/<int:id_company>', methods = ['GET', 'POST'])
 @token_required
-def usersData():
+def usersData(id_company):
     if request.method == 'GET':
         try:
-            id_company = session['company']
+            #id_company = session['company'] "lo ideal seria sacarlo del session"
             usersList = getCompanyUsers(id_company)
             return usersList
         except Exception as e:
@@ -60,7 +60,6 @@ def usersData():
     elif request.method == 'POST':
         try:
             data = request.get_json()
-            id_company = session['company']
             usersList = newCompanyUser(id_company, data)
             return usersList
         except Exception as e:
@@ -73,6 +72,7 @@ def usersDatabyId(id_user):
     if request.method == 'GET':
         try:
             id_company = session['company']
+            print(id_company)
             userData = getCompanyUsersbyId(id_company, id_user)
             return userData
         except Exception as e:

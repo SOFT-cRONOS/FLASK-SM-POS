@@ -13,8 +13,7 @@ from Models.user import getUserPermission
 def token_required(func):
     @wraps(func)
     def decorated(*args, **kwargs):
-        print("kwargs")
-        print(kwargs)
+        print("kwargs:", kwargs)
         token = None
 
         if 'x-access-token' in request.headers:

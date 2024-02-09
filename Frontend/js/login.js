@@ -117,6 +117,7 @@ function credencialLogin () {
                         localStorage.setItem('token', resp.token);
                         localStorage.setItem('username', resp.username);
                         localStorage.setItem('id', resp.id);
+                        localStorage.setItem('company', resp.company);
                         
                         // Muestra un mensaje de bienvenida y redirige al usuario al panel de control.
                         // document.getElementById("message").innerHTML = 'Bienvenido ' + resp.username;

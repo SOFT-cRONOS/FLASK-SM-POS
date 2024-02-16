@@ -36,7 +36,7 @@ function logout(){
 //####################### Funciones cliente ############################
 // Función para cargar la lista de clientes desde la API
 //separar la funcion getCLient de otra q genere la tabla
-    function getClient(){
+    function getClient() {
         // config de token
         const id = localStorage.getItem('id');
         const token = localStorage.getItem('token')
@@ -52,67 +52,44 @@ function logout(){
         }
         // fin config de token
         
-        //lectura elementos html
-        const nuevoClienteForm = document.getElementById('nuevo-cliente-form');
-        const tabla = document.getElementById('tabla-clientes');
-        const tbody = document.getElementById('datos-tabla-clientes');
 
-    fetch(`${urlServidorAPI}/user/${company}`, requestOptions).then(
-        resp => {return resp.json()}
-    ).then(
-        resp => {console.log(resp)
-
-            //action
-            // Vaciar todas las filas del <tbody>
-            while (tbody.firstChild) {
-                tbody.removeChild(tbody.firstChild);
-            }
-            resp.forEach((cliente) => {
-                const fila = document.createElement('tr');
-                fila.innerHTML = `
-                    <td>${cliente.id}</td>
-                    <td>${cliente.lastname}</td>
-                    <td>${cliente.name_users}</td>
-                    <td>${cliente.phone}</td>
-                    <td>
-                    <a href="#" class="btn btn-primary" onclick="editClient(${cliente.id_cliente})">Editar</a>
-                    <a href="#" class="btn btn-secondary" onclick="bajaClint(${cliente.id_cliente})">Baja</a>
-                    </td>
-                `;
-                tbody.appendChild(fila);
-            });
-
-        }
-
-    )
+        return fetch(`${urlServidorAPI}/user/${company}`, requestOptions)
+        .then(resp => {
+            return resp.json()
+        })
+        .catch(error => {
+            console.error('Error al obtener datos del cliente:', error);
+            throw error; // devuelve error
+        });  
     }
 
     //Funcion para obtener datos de un cliente por id
     function get_client_byid(id_cliente){
-            // config de token
-            const id = localStorage.getItem('id');
-            const token = localStorage.getItem('token')
-
-            const requestOptions = {
-            method : 'GET',
-            headers:{
-                'Content-Type': 'application/json',
-                'x-access-token': token,
-                'user-id': id
-                }
+        // config de token
+        const id = localStorage.getItem('id');
+        const token = localStorage.getItem('token')
+        const company = localStorage.getItem('company')
+        console.log(token);
+        const requestOptions = {
+        method : 'GET',
+        headers:{
+            'Content-Type': 'application/json',
+            'x-access-token': token,
+            'user-id': id
             }
-            // fin config de token
+        }
+        // fin config de token
 
-            //lectura elementos html
-            //Retorna la respuesta
-            return fetch(`http://127.0.0.1:4500/client/${id}/byid/${id_cliente}`, requestOptions)
-            .then(resp => {
-                return resp.json()
-            })
-            .catch(error => {
-                console.error('Error al obtener datos del cliente:', error);
-                throw error; // devuelve error
-            });  
+        //Retorna la respuesta
+        return fetch(`${urlServidorAPI}/user/${company}/${id_cliente}`, requestOptions)
+        .then(resp => {
+            return resp.json();
+           
+        })
+        .catch(error => {
+            console.error('Error al obtener datos del cliente:', error);
+            throw error; // devuelve error
+        });  
     }
 
     //Funcion para obtener datos de un cliente por id
@@ -732,9 +709,18 @@ function viewSells(){
 
 }
 //######################################################################
-//###################   Fin Funciones Sell     ##########################
+//##################   Fin Funciones Sell     ##########################
 //######################################################################
 
+//######################################################################
+//#################   Funciones de interfaz     ########################
+//######################################################################
+const btnLogout = document.getElementById('btn-logout');
+btnLogout.addEventListener("click", logout);
+
+//######################################################################
+//################   Fin Funciones de interfaz #########################
+//######################################################################
 //         ----------------------------------------------------
 
 // Función para dar formato a moneda
@@ -752,5 +738,3 @@ function formatoFecha(dateString) {
     return new Date(dateString).toLocaleDateString('es-ES', options);
   }
 
-
-        

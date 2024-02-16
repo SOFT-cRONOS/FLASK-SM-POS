@@ -248,7 +248,7 @@ def newCompanyUser (id_company, data):
         return jsonify({"message":200})
     except Exception as e:
         cur.execute('ROLLBACK')
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error interno": str(e)}), 500
     finally:
         cur.close()
 

@@ -66,13 +66,11 @@ def usersData(id_company):
             return jsonify({"error de ruta": str(e)}), 500
 
 #Consultar cliente por ID
-@userHandle.route('/<int:id_user>', methods = ['GET', 'POST'])
+@userHandle.route('/<int:id_company>/<int:id_user>', methods = ['GET', 'POST'])
 @token_required
-def usersDatabyId(id_user):
+def usersDatabyId(id_company, id_user):
     if request.method == 'GET':
         try:
-            id_company = session['company']
-            print(id_company)
             userData = getCompanyUsersbyId(id_company, id_user)
             return userData
         except Exception as e:

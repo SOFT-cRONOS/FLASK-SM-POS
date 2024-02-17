@@ -8,13 +8,13 @@ from BD.database import ConnBD as bd
 
 productHandle = Blueprint('product', __name__)
 
-@productHandle.route('/', methods = ['GET', 'POST', 'PUT'])
+@productHandle.route('/<int:id_company>', methods = ['GET', 'POST', 'PUT'])
 @token_required
 #@user_resources
-def productData():
+def productData(id_company):
     if request.method == 'GET':
         try:
-            id_company = session['company']
+            """ id_company = session['company'] """
             usersList = Product.getAllProduct(id_company)
             return usersList
         except Exception as e:

@@ -41,7 +41,7 @@ function loadClientTable() {
 
 }
 
-
+let idClient = 0;
 
 /* Modal form config */
 const modals_states = {
@@ -65,21 +65,18 @@ const modalClient_pass = document.getElementById('passwprd');
 const modalClient_address = document.getElementById('adress');
 const modalClient_naddress = document.getElementById('nadress');
 const modalClient_dpto = document.getElementById('ndpto');
+const modalClient_phone = document.getElementById('phone');
 
     /* buttom */
+const btnViewAll = document.getElementById('btnviewall');
+btnViewAll.addEventListener("click", viewAllClientdata)
 const btnOk = document.getElementById('btnOk');
 btnOk.addEventListener("click", saveClientdata);
 const btnCancel = document.getElementById('btnCancel');
 btnCancel.addEventListener("click", modalClient_close);
 
 function modalClient_new () {
-    modalClient_nick.value = '';
-    modalClient_email.value = '';
-    modalClient_name.value = '';
-    modalClient_lastname.value = '';
-    modalClient_dni.value = '';
-    modalClient_pass.value = '';
-    modalClient_imglink.value = '';
+    modalClient_reset ()
     modalClient_imglink.style.display = 'block';
     modalClient_img.setAttribute("src", 'https://static-00.iconduck.com/assets.00/profile-user-icon-2048x2048-m41rxkoe.png');
     modalClient_show('new')
@@ -115,10 +112,28 @@ function modalClient_view (event) {
         modalClient_pass.value = resp[0].pass;
         modalClient_imglink.value = resp[0].img;
         modalClient_imglink.style.display = 'none';
+        modalClient_address.value = resp[0].home_address;
+        modalClient_naddress.value = resp[0].number_address;
+        modalClient_dpto.value = resp[0].department;
+        modalClient_phone.value = resp[0].phone;
         modalClient_img.setAttribute("src", resp[0].img);
         
     })
     modalClient_show('view')
+}
+
+function modalClient_reset () {
+    modalClient_nick.value = '';
+    modalClient_email.value = '';
+    modalClient_name.value = '';
+    modalClient_lastname.value = '';
+    modalClient_dni.value = '';
+    modalClient_pass.value = '';
+    modalClient_imglink.value = '';
+    modalClient_address.value = '';
+    modalClient_naddress.value = '';
+    modalClient_dpto.value = '';
+    modalClient_phone.value = '';
 }
 
 function modalClient_show (state) {
@@ -146,6 +161,11 @@ function modalClient_show (state) {
 
 function modalClient_close() {
     modalClient.hide();
+}
+
+function viewAllClientdata() {
+    console.log(idClient);
+    window.location.href = `client-data.html?client=${idClient}`;
 }
 
 
@@ -192,10 +212,16 @@ function saveClientdata () {
     .then(resp => {
         return resp.json();
     })
+    .then(resp => {
+        //limpia el modal
+        modalClient_close();
+        modalClient_reset();
+    } )
     .catch(error => {
         console.error('Error al obtener datos del cliente:', error);
         throw error; // devuelve error
-    });  
+    }); 
+
 
 }
 

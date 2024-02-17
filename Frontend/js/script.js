@@ -20,6 +20,7 @@
         // Si no hay token, redirige a la página de inicio de sesión.
         window.location.href = "login.html";
     }
+    feather.replace();
     }
 
 // - * User login data */
@@ -281,10 +282,11 @@ function logout(){
 //####################### Funciones Item ############################
 //######################################################################
         // Función todos los items
-        function getItem(){
+        function getItems(){
             // config de token
             const id = localStorage.getItem('id');
-            const token = localStorage.getItem('token')
+            const token = localStorage.getItem('token');
+            const company = localStorage.getItem('company')
 
             const requestOptions = {
             method : 'GET',
@@ -298,7 +300,7 @@ function logout(){
             
 
 
-        return fetch(`http://127.0.0.1:4500/item/${id}/getall`, requestOptions)
+        return fetch(`http://127.0.0.1:4500/product/${company}`, requestOptions)
         .then(
             resp => {return resp.json()
             })

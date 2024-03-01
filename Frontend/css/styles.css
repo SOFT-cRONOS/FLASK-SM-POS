@@ -3,10 +3,12 @@
     --sombra-color-primario:rgba(60, 58, 120, .25);
     --sombra-color-fondo: rgba(119, 102, 157, .1);
     --color-secundario: #fb6393;
+    --color-alert: #ff4746;
     --color-terciario: #cfdfff;
     --color-text-light:#f9faff;
     --color-text-dark:#333333;
     --color-background: #e4ecfb;
+    --color-grey: #a8a8a8;
   }
 
 /* General */
@@ -25,6 +27,26 @@ main {
   width: 16px;
   height: 16px;
   vertical-align: text-bottom;
+}
+
+.option-group {
+  background-color: var(--color-grey);
+  color: var(--color-text-light);
+  border-radius: 6px;
+  padding: 0.6rem;
+  margin-bottom: 1.3rem;
+
+}
+
+@media (min-width: 900px) {
+  .option-group {
+    margin-left: 1.3rem;
+    margin-bottom: 0;
+  }
+}
+
+.text-alert {
+  color: var(--color-alert);
 }
 
 /*
@@ -224,4 +246,10 @@ scroll-page {
   justify-content: center;
   height: 100%;
   font-size: 5em;
+}
+
+
+/* dialog items */
+#itemForm .modal-dialog {
+  max-width: 90%;
 }

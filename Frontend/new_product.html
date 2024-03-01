@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.84.0">
+    <title>Flsk-miniPOS</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/dashboard/">
+
+
+    <!-- Bootstrap core CSS -->
+    <link href="lib/bootstrap-5.0.2-dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap core CSS -->
+    <link href="css/styles.css" rel="stylesheet">
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+
+    
+    <!-- Custom styles for this template -->
+    <link href="css/dashboard.css" rel="stylesheet">
+  </head>
+  <body>
+    
+<header class="nav py-3 mb-3 border-bottom ">
+  <div class="container-fluid d-grid gap-3 align-items-right" style="grid-template-columns: 1fr 3fr;">
+    
+    <div class="spacer">
+    </div>
+
+    <div class="d-flex align-items-center">
+      <form class="w-100 me-3">
+        <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
+      </form>
+      <a class="nav-link" href="#">
+        <span data-feather="bell"></span>
+      </a>
+      <a class="nav-link" href="#">
+        <span data-feather="settings"></span>
+      </a>
+      <div class="flex-shrink-0 dropdown">
+        <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle ms-2 me-4" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
+          <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
+        </a>
+        <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
+          <li><a class="dropdown-item" href="#">New project...</a></li>
+          <li><a class="dropdown-item" href="#">Settings</a></li>
+          <li><a class="dropdown-item" href="#">Profile</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="#">Sign out</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid d-grid gap-3 align-items-center mt-2" style="grid-template-columns: 1fr 3fr;">
+    <div class="spacer">
+    </div>
+    <div class="d-flex align-items-center">
+      <h2 id="greeting-text">Hola cRONOS</h2>
+      <div class="data-card">
+        Lunes 22/08/2024
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container-fluid">
+  <div class="row">
+    <nav id="sidebarMenu" class="col-md-3 sidebar">
+      <div class="d-flex flex-column justify-content-center align-items-center">
+        <div class="position-sticky pt-3">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link active" title="Home" aria-current="page" href="index.html">
+                <span class="nav-icon" data-feather="home"></span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" title="POS" href="pos.html">
+                <span data-feather="dollar-sign"></span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" title="Productos" href="product.html">
+                <span data-feather="shopping-cart"></span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" title="Clientes" href="client.html">
+                <span data-feather="users"></span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" title="Reportes" href="report.html">
+                <span data-feather="bar-chart-2"></span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" title="Usuarios"href="users.html">
+                <span data-feather="layers"></span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <main class="col-md-9 mx-auto col-lg-10 px-md-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Cliente - <span id="title-name"></span></h1>
+        <!-- ### barra superior ### -->
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+            <button id="new-client" type="button" class="btn btn-sm btn-outline-secondary">Nuevo</button>
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+            <span data-feather="calendar"></span>
+            This week
+          </button>
+        </div>
+        <!-- ### fin barra superior ### -->
+      </div>
+
+      <div class="row">
+        <form id="formItem">
+          <div class="modal-body">
+              <!-- #### Datos  ####  -->
+              <div class="row">
+                <div class="col">
+                  <label class="form-label" for="code">Codigo</label>
+                  <input type="text" id="code" class="form-control" />
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label" for="brand">Marca</label>
+                  <select id="brand" class="form-select" aria-label="Default select example">
+                    <option selected>...</option>
+                    <option value="1">One</option>
+                    <option value="2">Two</option>
+                    <option value="3">Three</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label" for="category">Categoria</label>
+                  <select id="category" class="form-select" aria-label="Default select example">
+                    <option selected>...</option>
+                    <option value="1">One</option>
+                    <option value="2">Two</option>
+                    <option value="3">Three</option>
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label" for="category">UM</label>
+                  <select id="category" class="form-select" aria-label="Default select example">
+                    <option selected>...</option>
+                    <option value="1">Gramos</option>
+                    <option value="2">Kilo</option>
+                    <option value="3">Unidad</option>
+                  </select>
+                </div>
+                <div class="col">
+                  <div class="form-outline">
+                    <label class="form-label" for="score">Puntaje</label>
+                    <div class="input-group mb-3">
+                      <input id="score" type="text" class="form-control"  aria-label="Recipient's username" aria-describedby="score-data">
+                      <span class="input-group-text" id="score-data">/5</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-outline">
+                    <label class="form-label" for="nombre">Nombre</label>
+                    <input type="text" id="nombre" class="form-control" />
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-outline">
+                    <label class="form-label" for="detalle">Detalle</label>
+                    <input type="email" id="detalle" class="form-control" />                
+                  </div>
+                </div>
+              </div>
+              <br>
+              <!-- #### Calculo Precio #### -->
+              <div class="row">
+                <div class="col-md-4 option-group">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="calc-price-controls">
+                    <label class="form-check-label" for="calc-price-controls">Calcular precio</label>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <!-- venta input -->
+                      <div class="form-outline">
+                        <label class="form-label" for="bulk-price">Costo Bulto</label>
+                        <input type="text" id="bulk-price" class="form-control" disabled />                  
+                      </div>
+                    </div>
+                    <div class="col">
+                      <!-- venta input -->
+                      <div class="form-outline">
+                        <label class="form-label" for="bulk-unit">Cantidad/Bulto</label>
+                        <input type="text" id="bulk-unit" class="form-control" disabled/>                  
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col option-group">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="calc-price-controls">
+                    <label class="form-check-label" for="calc-price-controls">Producto compuesto</label>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <!-- venta input -->
+                      <div class="form-outline">
+                        <label class="form-label" for="bulk-price">Componentes</label>
+                        <input type="text" id="bulk-price" class="form-control" disabled />                  
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <!-- venta input -->
+                      <div class="form-outline">
+                        <label class="form-label" for="bulk-price">Cantidad</label>
+                        <input type="text" id="bulk-price" class="form-control" disabled />                  
+                      </div>
+                    </div>
+                    
+                    <div class="col-md-2">
+                      <!-- venta input -->
+                        <label class="form-label" for="bulk-price">Agregar</label>
+                        <button type="button" class="btn btn-secondary">+</button>
+                    </div>
+                  </div>
+                </div>
+                
+              </div>
+              <br>
+              <!-- #### Precio #### -->
+              <div class="row">
+                <div class="col">
+                  <!-- $ Compra input -->
+                  <div class="form-outline">
+                    <label class="form-label" for="buy-price">$ por <span id="product-um">U</span></label>
+                    <input type="text" id="buy-price" class="form-control"/>                  
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-outline">
+                    <label class="form-label" for="gain">% Ganancia</label>
+                    <input type="text" id="gain" class="form-control"/>
+                  </div>
+                </div>
+                <div class="col">
+                  <!-- venta input -->
+                  <div class="form-outline">
+                    <label class="form-label" for="sell-price">$ Venta</label>
+                    <input type="text" id="sell-price" class="form-control" disabled/>                  
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-outline">
+                    <label class="form-label" for="gain-margin">Margen</label>
+                    <input type="text" id="gain-margin" class="form-control" />
+                  </div>
+                </div>
+              </div>
+              <!-- #### Proveedor #### -->
+              <div class="row">
+                <div class="col">
+                  <!-- Cantidad input -->
+                  <div class="form-outline">
+                    <label class="form-label" for="supplier">Proveedor</label>
+                    <select id="supplier" class="form-select" aria-label="Default select example">
+                      <option selected>...</option>
+                      <option value="1">One</option>
+                      <option value="2">Two</option>
+                      <option value="3">Three</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-outline">
+                    <label class="form-label" for="link">Link</label>
+                    <input type="text" id="link" class="form-control" />
+                  </div>
+                </div>
+              </div>
+              <!-- #### Config #### -->
+              <div class="row">
+                <div class="col">
+                  <!-- Cantidad input -->
+                  <div class="form-outline">
+                    <label class="form-label" for="stock">Stock</label>
+                    <input type="text" id="stock" class="form-control" />
+                  </div>
+                </div>
+                <div class="col">
+                  <!-- Cantidad input -->
+                  <div class="form-outline">
+                    <label class="form-label" for="stock-alert">Alerta de stock</label>
+                    <input type="text" id="stock-alert" class="form-control" />
+                  </div>
+                </div>
+                <div class="col">
+                  <!-- $ Compra input -->
+                  <div class="form-outline">
+                    <label class="form-label" for="min-sell">Venta Minima</label>
+                    <input type="text" id="min-sell" class="form-control" />                  
+                  </div>
+                </div>
+                <div class="col">
+                  <!-- venta input -->
+                  <div class="form-outline">
+                    <label class="form-label" for="discount">Descuento</label>
+                    <select id="discount" class="form-select" aria-label="Default select example">
+                      <option selected>...</option>
+                      <option value="1">10%</option>
+                      <option value="2">+ 10u</option>
+                      <option value="3">Sabado</option>
+                    </select>                  
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-success">Guardar</button>
+            <button type="button" class="btn btn-secondary">Cancelar</button>
+          </div>
+        </form>
+      </div>
+      <div class="row">
+        <div class="col">
+          
+        </div>
+        <div class="col">
+         
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+  <script src="lib/bootstrap-5.0.2-dist/js/bootstrap.bundle.min.js"></script>    
+  <script src="lib/feather-icons/feather.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script>
+  <script src="js/server.js"></script>
+  <script src="js/script.js"></script>
+  <script src="js/client-data.js"></script>
+    
+  </body>
+</html>
